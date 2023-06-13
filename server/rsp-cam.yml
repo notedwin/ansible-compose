@@ -1,0 +1,142 @@
+---
+- name: Deploy services on linux server
+  hosts: rsp
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: Get env file content
+      include_vars:
+        file: env.yml
+        name: env
+    
+    # - name: Install utils
+    #   apt:
+    #     name:
+    #       - v4l2loopback-dkms
+    #       - v4l-utils
+    #       - ffmpeg
+    #       - ca-certificates 
+    #       - curl 
+    #       - gnupg
+    #       - python3
+    #       - git
+    #       - pip
+    #       - libcamera0
+    #       - libfreetype6
+
+    #     update_cache: yes
+    
+    # # - name: add docker gpg key
+    # #   shell: sudo install -m 0755 -d /etc/apt/keyrings;
+    # #     curl -fsSL https://download.docker.com/linux/raspbian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg;
+    # #     sudo chmod a+r /etc/apt/keyrings/docker.gpg
+    
+    # - name: add docker repo
+    #   shell: echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/raspbian "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    # # - name: Update package cache
+    # #   apt:
+    # #     upgrade: dist
+    # #     update_cache: yes
+
+    # - name: Install Docker
+    #   apt:
+    #     name:
+    #       - docker-ce 
+    #       - docker-ce-cli 
+    #       - containerd.io 
+    #       - docker-buildx-plugin 
+    #       - docker-compose-plugin
+
+    # - name: Enabled passwordless sudo for {{item}}
+    #   lineinfile:
+    #     dest: /etc/sudoers
+    #     regexp: "^wheel"
+    #     line: '{{item }} ALL=(ALL) NOPASSWD:ALL'
+    #     state: present
+    #     validate: 'visudo -cf %s'
+    #   loop: 
+    #     - ansible
+    #     - notedwin
+    #     - docker
+      
+    # - name: Suppress login message
+    #   file:
+    #     path: "/home/notedwin/.hushlogin"
+    #     mode: 0644
+    #     owner: notedwin
+    #     group: notedwin
+    #     modification_time: preserve
+    #     access_time: preserve
+    #     state: touch
+    
+    # - name: Create Docker group
+    #   group:
+    #     name: docker
+    #     state: present
+
+    # - name: Add notedwin to Docker group
+    #   user:
+    #     name: notedwin
+    #     groups: docker
+    #     append: yes
+
+    # - name: Create bridge network
+    #   docker_network:
+    #     name: rtsp-bridge
+    #     driver: bridge
+
+    - name: Copy mediamtx config
+      copy:
+        src: ./rtsp_config.yml
+        dest: /home/notedwin/mediamtx.yml
+        owner: notedwin
+        group: notedwin
+        mode: 0644
+        force: yes
+
+    - name: Run rtsp simple server
+      docker_container:
+        restart: yes
+        name: rtsp
+        image: bluenviron/mediamtx:latest-ffmpeg-rpi
+        state: started
+        restart_policy: unless-stopped
+        privileged: yes
+        tmpfs:
+          - /dev/shm:exec
+        volumes:
+          - /run/udev:/run/udev:ro
+          - /home/notedwin/mediamtx.yml:/mediamtx.yml
+        env:
+          MTX_PATHS_CAM_SOURCE: rpiCamera
+        ports:
+          - "8554:8554/tcp"
+          - "8888:8888/tcp"
+
+    # - name: Run Portainer agent
+    #   docker_container:
+    #     restart: yes
+    #     name: portainer-agent
+    #     image: portainer/agent
+    #     state: started
+    #     restart_policy: unless-stopped
+    #     privileged: yes
+    #     volumes:
+    #       - /var/run/docker.sock:/var/run/docker.sock
+    #     ports:
+    #       - "9001:9001/tcp"
+      
+    # - name: Run a node exporter docker container
+    #   docker_container:
+    #     name: node_exporter
+    #     image: prom/node-exporter
+    #     state: started
+    #     restart_policy: unless-stopped
+    #     ports:
+    #       - "9100:9100"
+    #     volumes:
+    #       - /proc:/host/proc:ro
+    #       - /sys:/host/sys:ro
+    #       - /:/rootfs:ro
+    #     command: --path.procfs /host/proc --path.sysfs /host/sys --path.rootfs /rootfs --collector.filesystem.ignored-mount-points "^/(sys|proc|dev|host|etc)($$|/)"

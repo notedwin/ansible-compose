@@ -1,0 +1,35 @@
+---
+- name: Deploy services on linux server
+  hosts: server
+  gather_facts: false
+  become: yes
+  tasks:
+
+    - name: Get env file content
+      include_vars:
+        file: env.yml
+        name: env
+    - name: Copy Prometheus config file
+      copy:
+        src: ./prometheus.yml
+        dest: /home/notedwin/prometheus/prometheus.yml
+        owner: notedwin
+        group: notedwin
+        mode: 0644
+        force: yes
+
+    - name: Run Prometheus docker container
+      docker_container:
+        restart: yes
+        name: prometheus
+        image: prom/prometheus
+        user: root
+        state: started
+        restart_policy: unless-stopped
+        network_mode: my_network
+        ports:
+          - "9090:9090"
+        volumes:
+          - /home/notedwin/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+          - /home/notedwin/prometheus/data:/prometheus
+        command: --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles

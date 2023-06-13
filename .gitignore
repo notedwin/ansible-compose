@@ -1,0 +1,8 @@
+log/
+env.yml
+hosts
+resume.pdf
+rsyslog.conf
+backup.rsyslog.conf
+caddyfile
+raspi.sh
