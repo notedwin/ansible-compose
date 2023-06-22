@@ -6,3 +6,4 @@ rsyslog.conf
 backup.rsyslog.conf
 caddyfile
 raspi.sh
+torrc

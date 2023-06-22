@@ -1,0 +1,5 @@
+SocksPort 0.0.0.0:9050
+## Below is optional, if you want to use the ControlPort to do things such as rotating IP addresses, etc.
+Nickname nickname
+ControlPort 0.0.0.0:9051
+HashedControlPassword 16:0D**********************
