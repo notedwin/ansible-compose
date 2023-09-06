@@ -1,0 +1,12 @@
+---
+- name: Deploy
+  hosts: test
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: Get env file content
+      include_vars:
+        file: env.yml
+        name: env
+
+    # ... other tasks, try to keep empty when pushing to git

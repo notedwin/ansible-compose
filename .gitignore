@@ -7,3 +7,7 @@ backup.rsyslog.conf
 caddyfile
 raspi.sh
 torrc
+.fact_cache
+backup/
+pg_switch.sh
+all_databases.sql

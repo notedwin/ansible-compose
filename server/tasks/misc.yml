@@ -1,0 +1,176 @@
+# --------------------------DATABASES--------------------------
+- name: Run postgres container
+  docker_container:
+    name: postgres
+    image: postgres
+    state: started
+    restart_policy: always
+    network_mode: net
+    volumes:
+      - /home/notedwin2/docker/postgres:/var/lib/postgresql/data
+    env: POSTGRES_USER={{ env.USER }}
+      POSTGRES_PASSWORD={{ env.PASSWORD }}
+      POSTGRES_DB={{ env.DB }}
+    ports:
+      - "5432:5432"
+# --------------------Grafana + Prom------------------------
+- name: Run Grafana container
+  docker_container:
+    name: grafana
+    restart: yes
+    restart_policy: always
+    image: grafana/grafana:9.5.3
+    network_mode: net
+    ports:
+      - 3000:3000
+    env: 
+      GF_SECURITY_ADMIN_PASSWORD={{ env.PASSWORD }}
+      GF_SECURITY_ADMIN_USER={{ env.USER }}
+      GF_FEATURE_TOGGLES_ENABLE=publicDashboards
+      GF_SERVER_SERVER_FROM_SUB_PATH="FALSE"
+      GF_LOG_LEVEL="debug"
+      GF_SERVER_DOMAIN="notedwin.com"
+      # GF_SERVER_ROOT_URL="https://grafana.notedwin.com/"
+
+- name: Run a node exporter docker container
+  docker_container:
+    name: node_exporter
+    image: prom/node-exporter
+    state: started
+    restart_policy: unless-stopped
+    network_mode: net
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command: --path.procfs /host/proc --path.sysfs /host/sys --path.rootfs /rootfs --collector.filesystem.ignored-mount-points "^/(sys|proc|dev|host|etc)($$|/)"
+
+- name: Copy Prometheus config file
+  copy:
+    src: ./prometheus.yml
+    dest: /home/notedwin2/docker/prometheus/prometheus.yml
+    owner: notedwin
+    group: notedwin
+    mode: 0644
+    force: yes
+
+- name: Run Prometheus docker container
+  docker_container:
+    name: prometheus
+    image: prom/prometheus
+    user: root
+    state: started
+    restart_policy: unless-stopped
+    network_mode: net
+    ports:
+      - "9090:9090"
+    volumes:
+      - /home/notedwin2/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /home/notedwin2/docker/prometheus/data:/prometheus
+    command: --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles
+
+# --------------------Misc----------------------------
+- name: Run motioneye
+  docker_container:
+    name: motioneye
+    image: ccrisan/motioneye:master-amd64
+    state: started
+    restart_policy: unless-stopped
+    network_mode: net
+    ports:
+      - "8765:8765"
+    volumes:
+      /home/notedwin/motioneye:/etc/motioneye
+      /home/notedwin/motioneye:/var/lib/motioneye
+      /etc/localtime:/etc/localtime:ro
+
+- name: Run watchtowrr container
+  docker_container:
+    restart: yes
+    name: watchtower
+    image: containrrr/watchtower
+    state: started
+    restart_policy: unless-stopped
+    network_mode: net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+
+
+- name: Run Portainer container
+  docker_container:
+    name: portainer
+    image: portainer/portainer
+    restart_policy: unless-stopped
+    state: started
+    network_mode: net
+    ports:
+      - 9000:9000
+    env:
+      AGENT_CLUSTER_ADDR: tasks.agent
+      PORTAINER_DATA: /data
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+      - /home/notedwin2/docker/portainer:/
+      
+
+# -------------------- Services ----------------------------
+
+    - name: Create resolv.d folder
+      file:
+        path: /etc/systemd/resolved.conf.d
+        state: directory
+        owner: notedwin2
+        group: notedwin2
+        mode: 0755
+
+    - name: copy adguard.conf
+      copy:
+        src: adguard.conf
+        dest: /etc/systemd/resolved.conf.d/adguard.conf
+        owner: notedwin2
+        group: notedwin2
+        mode: 0644
+
+    - name: Restart systemd-resolved
+      systemd:
+        daemon_reload: yes
+        name: systemd-resolved
+        state: restarted
+
+    - name: Run adguard container
+      docker_container:
+        name: adguard
+        image: adguard/adguardhome
+        state: started
+        restart_policy: unless-stopped
+        network_mode: net
+        ports:
+          - "53:53/tcp"
+          - "53:53/udp"
+          - "67:67/udp"
+          - "81:80/tcp"
+          - "853:853/tcp"
+          - "3001:3000/tcp"
+        volumes:
+          - /home/notedwin2/docker/adguard:/opt/adguardhome/work
+
+  
+    - name: Run Homeassistant container
+      docker_container:
+        name: homeassistant
+        image: homeassistant/home-assistant
+        state: started
+        restart_policy: unless-stopped
+        network_mode: net
+        ports:
+          - "8123:8123"
+        volumes:
+          - /home/notedwin2/docker/homeassistant:/config
+          - /etc/localtime:/etc/localtime:ro
+        env: TZ=America/Chicago
+          PUID=1000
+          PGID=1000

@@ -79,59 +79,6 @@
 
 
 
-# installing through downloads is lame
- - name: Install tailscale
-
-      shell: curl -fsSL https://tailscale.com/install.sh | sh
-      args:
-        creates: /usr/local/bin/tailscale
-
-    - name: Check if oh-my-zsh exists
-
-      shell: test -d ~/.oh-my-zsh && echo "exists" || echo "does not exist"
-      register: oh_my_zsh_installed
-      changed_when: false
-
-    - name: Install oh-my-zsh
-
-      shell: sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-      when: oh_my_zsh_installed.stdout == "does not exist"
-
-    - name: get docker install script
-      shell: curl -fsSL https://get.docker.com -o get-docker.sh
-      args:
-        creates: ~/get-docker.sh
-
-    - name: install docker
-      shell: sh ~/get-docker.sh
-      args:
-        creates: /usr/bin/docker
-
-    - name: install docker
-      apt:
-        name:
-          - docker.io
-        state: present
-
-    - name: Create Docker group
-
-      group:
-        name: docker
-        state: present
-
-    - name: Add ansible and notedwin to Docker group
-      user:
-        name: ansible
-        groups: docker
-        append: yes
-
-    - name: Add notedwin to Docker group
-
-      user:
-        name: notedwin
-        groups: docker
-        append: yes
-
 # ----------------------------------------------------------
     - name: run vaultwarden
       docker_container:
@@ -250,3 +197,43 @@
         env: REDIS_PASSWORD={{ env.PASSWORD }}
           REDIS_USER={{ env.USER }}
     # --------------------------SERVICES---------------------------
+
+
+    - name: Run Transmission docker container
+      docker_container:
+        restart: yes
+        name: transmission
+        image: lscr.io/linuxserver/transmission:latest
+        state: started
+        restart_policy: unless-stopped
+        network_mode: my_network
+        ports:
+          - "9091:9091"
+          - "51413:51413"
+          - "51413:51413/udp"
+        volumes:
+          - /home/notedwin/Downloads:/downloads
+        env:
+          PUID=1000
+          PGID=1000
+          TZ=America/Chicago
+
+
+        - name: Run Code-server
+      docker_container:
+        name: code-server
+        image: linuxserver/code-server
+        network_mode: my_network
+        restart_policy: always
+        ports:
+          - 8443:8443
+        env: PUID=1000
+          PGID=1000
+          TZ=America/Chicago
+          PASSWORD={{ env.PASSWORD }}
+          SUDO_PASSWORD={{ env.PASSWORD }}
+          SUDO="true"
+        volumes:
+          - /home/notedwin/code-server:/config
+          - /home/notedwin:/home/notedwin
+      
