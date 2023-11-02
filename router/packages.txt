@@ -1,0 +1,4 @@
+opkg update
+opkg list-upgradable | cut -f 1 -d ' ' | xargs -r opkg upgrade
+opkg install iptables-nft tailscale prometheus-node-exporter-lua-wifi_stations uhttpd-mod-lua prometheus-node-exporter-lua-openwrt kmod-tun prometheus-node-exporter-lua-netstat prometheus-node-exporter-lua prometheus-node-exporter-lua-wifi prometheus-node-exporter-lua-nat_traffic luasocket tailscaled tmux
+tailscale up --netfilter-mode=off --ssh

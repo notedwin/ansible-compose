@@ -11,3 +11,4 @@ torrc
 backup/
 pg_switch.sh
 all_databases.sql
+iterm_profile.json
