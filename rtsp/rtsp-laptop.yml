@@ -1,0 +1,71 @@
+---
+- name: Set up Linux laptop as an IP camera
+  hosts: think
+  become: yes
+
+  tasks:
+    - name: Install utils
+      apt:
+        name:
+          - v4l2loopback-dkms
+          - v4l-utils
+          - ffmpeg
+          - nvim
+        update_cache: yes
+
+    - name: Download RTSP Simple Server binary
+      get_url:
+        url: https://github.com/aler9/rtsp-simple-server/releases/download/v0.21.5/rtsp-simple-server_v0.21.5_linux_amd64.tar.gz
+        dest: /tmp/rtsp-simple-server.tar.gz
+
+    - name: Extract RTSP Simple Server binary
+      unarchive:
+        src: /tmp/rtsp-simple-server.tar.gz
+        dest: /opt/
+        remote_src: yes
+        # set permissions to executable
+        mode: 0755
+
+    - name: Load v4l2loopback kernel module
+      modprobe:
+        name: v4l2loopback
+        state: present
+        params:
+          exclusive_caps: "1"
+
+    - name: Configure RTSP Simple Server
+      lineinfile:
+        path: /opt/rtsp-simple-server.yml
+        regexp: "^#?paths:"
+        insertafter: "^#?paths:"
+        line: |
+          runOnInit: ffmpeg -f v4l2 -input_format h264 -video_size 1280x720 -framerate 30 -i /dev/video0 -c:v libx264 -preset ultrafast -tune zerolatency -b:v 2M -f rtsp -rtsp_transport tcp rtsp://localhost:8554/cam
+          runOnInitRestart: yes
+
+
+    - name: Create RTSP Simple Server service file
+      copy:
+        content: |
+          [Unit]
+          Description=RTSP Simple Server
+          After=network.target
+
+          [Service]
+          Type=simple
+          ExecStart=/opt/rtsp-simple-server /opt/rtsp-simple-server.yml
+          Restart=on-failure
+          RestartSec=5
+
+          [Install]
+          WantedBy=multi-user.target
+        dest: /etc/systemd/system/rtsp-simple-server.service
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Start RTSP Simple Server
+      systemd:
+        name: rtsp-simple-server
+        enabled: yes
+        state: started
+        daemon_reload: yes
