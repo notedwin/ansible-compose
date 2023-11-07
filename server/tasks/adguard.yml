@@ -1,0 +1,54 @@
+---
+# - name: Create resolv.d folder
+#   file:
+#     path: /etc/systemd/resolved.conf.d
+#     state: directory
+#     owner: notedwin2
+#     group: notedwin2
+#     mode: 0755
+
+# - name: copy adguard.conf
+#   copy:
+#     src: adguard.conf
+#     dest: /etc/systemd/resolved.conf.d/adguard.conf
+#     owner: notedwin2
+#     group: notedwin2
+#     mode: 0644
+
+# - name: Restart systemd-resolved
+#   systemd:
+#     daemon_reload: yes
+#     name: systemd-resolved
+#     state: restarted
+
+# - name: Run adguard container
+#   docker_container:
+#     name: adguard
+#     image: adguard/adguardhome
+#     state: started
+#     restart_policy: unless-stopped
+#     network_mode: net
+#     ports:
+#       - "53:53/tcp"
+#       - "53:53/udp"
+#       - "81:80/tcp"
+#       - "853:853/tcp"
+#       - "3001:3000/tcp"
+#     volumes:
+#       - /home/notedwin2/docker/adguard:/opt/adguardhome/work
+
+- name: Run adguard container
+  docker_container:
+    name: adguard
+    image: adguard/adguardhome
+    state: started
+    network_mode: net
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "81:80/tcp"
+      - "853:853/tcp"
+      - "3001:3000/tcp"
+    volumes:
+      - /home/notedwin2/docker/adguard:/opt/adguardhome/work
+      - /home/notedwin2/docker/adguard:/opt/adguardhome/conf

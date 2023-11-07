@@ -1,7 +1,7 @@
 ---
 - name: Copy resume.pdf
   copy:
-    src: ./resume.pdf
+    src: ./configs/resume.pdf
     dest: /home/notedwin2/docker/caddy/resume.pdf
     owner: root
     group: root
@@ -10,7 +10,7 @@
 
 - name: Copy Caddyfile
   copy:
-    src: ./caddyfile
+    src: ./configs/caddyfile
     dest: /home/notedwin2/docker/caddy/Caddyfile
     owner: root
     group: root
@@ -19,10 +19,10 @@
 
 - name: Copy dockerfile
   copy:
-    src: dockerfile
+    src: ./configs/dockerfile
     dest: /home/notedwin2/docker/caddy/Dockerfile
-    owner: notedwin
-    group: notedwin
+    owner: notedwin2
+    group: notedwin2
     mode: 0644
     force: yes
 
@@ -56,3 +56,4 @@
       - /var/log/caddy/:/var/log/caddy/
       - /home/notedwin2/tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
       - /home/notedwin2/docker/caddy/resume.pdf:/resume/resume.pdf
+      - /home/notedwin2/til/:/til/

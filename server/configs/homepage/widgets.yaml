@@ -1,0 +1,17 @@
+- resources:
+    cpu: true
+    memory: true
+    disk:
+      - /
+
+- search:
+    provider: google
+    target: _blank
+
+- openmeteo:
+    label: Chicago
+    latitude: 50.4501
+    longitude: 30.5234
+    timezone: America/Chicago
+    units: imperial
+    cache: 5

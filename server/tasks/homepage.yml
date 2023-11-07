@@ -1,0 +1,20 @@
+---
+- name: copy homepage.conf
+  copy:
+    src: ./configs/homepage/
+    dest: /home/notedwin2/docker/homepage/config/
+    owner: notedwin2
+    group: notedwin2
+    mode: 0644
+- name: Run homepage container
+  docker_container:
+    name: homepage
+    image: ghcr.io/benphelps/homepage:latest
+    state: started
+    restart_policy: unless-stopped
+    network_mode: net
+    ports:
+      - "2000:3000/tcp"
+    volumes:
+      - /home/notedwin2/docker/homepage/config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations

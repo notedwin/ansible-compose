@@ -9,4 +9,9 @@
         file: env.yml
         name: env
 
+    - name: adguard
+      import_tasks: tasks/adguard.yml
+
+    # - name: Homepage
+    #   import_tasks: tasks/homepage.yml
     # ... other tasks, try to keep empty when pushing to git

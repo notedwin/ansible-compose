@@ -9,11 +9,29 @@
         file: env.yml
         name: env
 
-    - name: Run Linux setup task
+    - name: Linux
       import_tasks: tasks/linux.yml
 
-    - name: Run Caddy setup task
+    - name: Postgres
+      import_tasks: tasks/postgres.yml
+
+    - name: Caddy
       import_tasks: tasks/caddy.yml
-    
-    - name: Run Misc setup task
+
+    - name: Prometheus
+      import_tasks: tasks/prometheus.yml
+
+    - name: Adguard
+      import_tasks: tasks/adguard.yml
+
+    - name: ntfy
+      import_tasks: tasks/ntfy.yml
+
+    - name: Run Misc tasks
       import_tasks: tasks/misc.yml
+
+    - name: Grafana
+      import_tasks: tasks/grafana.yml
+
+    - name: Homepage
+      import_tasks: tasks/homepage.yml

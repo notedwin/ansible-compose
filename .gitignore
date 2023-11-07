@@ -1,14 +1,37 @@
+# logs
 log/
+# ansible vars
 env.yml
+# ansible hosts
 hosts
+# my resume
 resume.pdf
+# rsyslog files
 rsyslog.conf
 backup.rsyslog.conf
+# caddy config
 caddyfile
+# script to setup raspberry display
 raspi.sh
+# tor config
 torrc
+# ansible cache
 .fact_cache
+# previous server logs
 backup/
+# script to backup pg
 pg_switch.sh
+# database backup
 all_databases.sql
+# iterm profile backup
 iterm_profile.json
+# notes on openwrt error
+openwrt-debug-restart.txt
+# grafana config
+grafana/
+# homepage config
+services.yaml
+# adguard config
+adguard.yaml
+# ansible test file
+test.yml

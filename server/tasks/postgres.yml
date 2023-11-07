@@ -1,0 +1,24 @@
+---
+- name: Copy PostgreSQL config file
+  copy:
+    src: ./configs/postgresql.conf
+    dest: /home/notedwin2/docker/postgres/postgresql.conf
+    owner: notedwin2
+    group: notedwin2
+    mode: 0644
+    force: yes
+
+- name: Run postgres container
+  docker_container:
+    name: postgres
+    image: postgres:15
+    state: started
+    restart_policy: always
+    network_mode: net
+    volumes:
+      - /home/notedwin2/docker/postgres:/var/lib/postgresql/data
+    env: POSTGRES_USER={{ env.USER }}
+      POSTGRES_PASSWORD={{ env.PASSWORD }}
+      POSTGRES_DB={{ env.DB }}
+    ports:
+      - "5432:5432"

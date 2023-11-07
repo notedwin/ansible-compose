@@ -11,7 +11,7 @@
        
     - name: Copy Caddyfile
       copy:
-        src: ./caddyfile
+        src: ./configs/caddyfile
         dest: /home/notedwin/Caddyfile
         owner: root
         group: root
@@ -20,7 +20,7 @@
     
     - name: Copy caddy dockerfile
       copy:
-        src: dockerfile
+        src: ./configs/dockerfile
         dest: /home/notedwin/caddy/Dockerfile
         owner: notedwin
         group: notedwin

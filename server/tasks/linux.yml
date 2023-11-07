@@ -28,6 +28,7 @@
       - neovim
       - tmux
       - curl
+      - rsyslog-ompgsql
       - ca-certificates 
       - gnupg
       - docker-ce 
