@@ -1,0 +1,5 @@
+---
+- name: copy over database dump
+  copy:
+    src: ../../../backup/all_databases.sql
+    dest: /tmp/all_databases.sql

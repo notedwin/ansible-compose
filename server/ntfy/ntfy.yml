@@ -1,0 +1,16 @@
+---
+- name: copy templated config file
+  template:
+    src: ntfy.j2
+    dest: "/home/{{ env.USER }}/docker/ntfy/server.yml"
+
+- name: Run ntfy.com
+  docker_container:
+    name: ntfy
+    image: binwiederhier/ntfy
+    command:
+      - serve
+    ports:
+      - "82:80"
+    volumes:
+      - /home/{{ env.USER }}/docker/ntfy/server.yml:/etc/ntfy/server.yml

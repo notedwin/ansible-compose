@@ -1,0 +1,33 @@
+---
+- name: Copy PostgreSQL config file
+  copy:
+    src: postgresql.conf
+    dest: /home/{{ env.USER }}/docker/postgres/postgresql.conf
+    force: yes
+
+- name: Run postgres container
+  docker_container:
+    name: postgres
+    image: postgres:15
+    volumes:
+      - /home/{{ env.USER }}/docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+      - /home/{{ env.USER }}/docker/postgres/data:/var/lib/postgresql/data
+    env: POSTGRES_USER={{ env.USER }}
+      POSTGRES_PASSWORD={{ env.PASSWORD }}
+    ports:
+      - "5432:5432"
+
+- name: postgres_backup
+  docker_container:
+    name: db_dumper
+    image: prodrigestivill/postgres-backup-local
+    user: postgres:postgres
+    env:
+      POSTGRES_HOST: {{ ansible_default_ipv4.address }}
+      POSTGRES_DB: atuin,logs,apple
+      POSTGRES_USER: "{{ env.USER }}"
+      POSTGRES_PASSWORD: "{{ env.PASSWORD }}"
+      schedule: "@daily"
+      BACKUP_DIR: /db_dumps
+    volumes:
+      - /home/{{ env.USER }}/docker/backups:/db_dumps

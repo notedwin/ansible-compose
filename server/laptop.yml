@@ -1,0 +1,47 @@
+---
+- name: Setup homelab laptop
+  hosts: think
+  gather_facts: yes
+  become: yes
+  tasks:
+    - name: Get env file content
+      include_vars:
+        file: env.yml
+        name: env
+    # manually install sudo + adduser for now
+    # ssh-copy-id 192.168
+    # ssh
+    # su -l
+    # adduser <username> sudo
+
+    - name: Set become password
+      set_fact:
+        ansible_become_pass: "{{ env.ANSIBLE_BECOME_PASS }}"
+
+    - name: Run general setup
+      include_tasks: general-setup/general-setup.yml
+
+    - name: Turn off sleep, suspend, hibernate and hybrid-sleep
+      systemd:
+        name: "{{ item }}"
+        masked: yes
+      loop:
+        - sleep.target
+        - suspend.target
+        - hibernate.target
+        - hybrid-sleep.target
+
+    # https://discussion.fedoraproject.org/t/systemd-logind-eats-cpu-when-closing-laptop-lid/67805/3
+    - name: turn off suspend on lid close
+      lineinfile:
+        path: /etc/systemd/logind.conf
+        regexp: "^#?HandleLidSwitch="
+        line: "HandleLidSwitch=ignore"
+
+    - name: restart logind
+      systemd:
+        name: systemd-logind
+        state: restarted
+
+    - name: set dark mode
+      command: gsettings set org.gnome.desktop.interface color-scheme prefer-dark

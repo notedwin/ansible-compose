@@ -1,0 +1,44 @@
+---
+- name: Install pip and docker using geerlingguy roles
+  include_role:
+    name: geerlingguy.pip
+
+- name: Install docker from role
+  include_role:
+    name: geerlingguy.docker
+
+- name: Install docker extra packages
+  apt:
+    name:
+      - docker-compose-plugin
+      - python3-docker
+
+- name: Enable remote docker access
+  lineinfile:
+    path: /lib/systemd/system/docker.service
+    regexp: "^ExecStart="
+    line: "ExecStart=/usr/bin/dockerd -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock"
+
+- name: Create docker network
+  docker_network:
+    name: net
+    driver: bridge
+    state: present
+
+- name: Restart Docker
+  service:
+    name: docker
+    state: restarted
+# - name: Install system packages
+#   apt:
+#     name:
+#       - rsyslog-ompgsql
+
+# - name: Copy rsyslog config file to rsyslog config directory
+#   copy:
+#     src: ./rsyslog.conf
+#     dest: /etc/rsyslog.conf
+#     owner: notedwin
+#     group: notedwin
+#     mode: 0644
+#     force: yes

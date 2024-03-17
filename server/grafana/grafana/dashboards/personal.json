@@ -1,0 +1,1835 @@
+{
+	"annotations": {
+		"list": [
+			{
+				"builtIn": 1,
+				"datasource": {
+					"type": "grafana",
+					"uid": "-- Grafana --"
+				},
+				"enable": true,
+				"hide": true,
+				"iconColor": "rgba(0, 211, 255, 1)",
+				"name": "Annotations & Alerts",
+				"type": "dashboard"
+			}
+		]
+	},
+	"editable": true,
+	"fiscalYearStartMonth": 0,
+	"graphTooltip": 0,
+	"id": 4,
+	"links": [],
+	"liveNow": false,
+	"panels": [
+		{
+			"collapsed": true,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 0
+			},
+			"id": 13,
+			"panels": [
+				{
+					"datasource": {
+						"type": "postgres",
+						"uid": "2"
+					},
+					"fieldConfig": {
+						"defaults": {
+							"color": {
+								"mode": "palette-classic"
+							},
+							"custom": {
+								"axisCenteredZero": false,
+								"axisColorMode": "text",
+								"axisLabel": "",
+								"axisPlacement": "auto",
+								"fillOpacity": 80,
+								"gradientMode": "none",
+								"hideFrom": {
+									"legend": false,
+									"tooltip": false,
+									"viz": false
+								},
+								"lineWidth": 1,
+								"scaleDistribution": {
+									"type": "linear"
+								},
+								"thresholdsStyle": {
+									"mode": "off"
+								}
+							},
+							"mappings": [],
+							"thresholds": {
+								"mode": "absolute",
+								"steps": [
+									{
+										"color": "green"
+									},
+									{
+										"color": "red",
+										"value": 80
+									}
+								]
+							},
+							"unit": "s"
+						},
+						"overrides": []
+					},
+					"gridPos": {
+						"h": 8,
+						"w": 12,
+						"x": 0,
+						"y": 9
+					},
+					"id": 1,
+					"options": {
+						"barRadius": 0,
+						"barWidth": 0.97,
+						"fullHighlight": false,
+						"groupWidth": 0.7,
+						"legend": {
+							"calcs": [],
+							"displayMode": "list",
+							"placement": "right",
+							"showLegend": true
+						},
+						"orientation": "horizontal",
+						"showValue": "never",
+						"stacking": "none",
+						"tooltip": {
+							"mode": "single",
+							"sort": "none"
+						},
+						"xField": "project",
+						"xTickLabelRotation": 0,
+						"xTickLabelSpacing": 0
+					},
+					"pluginVersion": "9.5.3",
+					"targets": [
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "2"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": false,
+							"rawQuery": true,
+							"rawSql": "SELECT\n  datastr::json->>'title' as project,\n  SUM(duration) as seconds_worked_on\nFROM eventmodel \nWHERE bucket_id IN (1,5,6,7,9,10,15,16)\nAND datastr::json->>'app' = 'Code'\nAND timestamp > $__timeFrom() \nGROUP BY 1\nORDER BY 2 DESC\nLIMIT 5",
+							"refId": "A",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						}
+					],
+					"title": "Panel Title",
+					"type": "barchart"
+				},
+				{
+					"datasource": {
+						"type": "postgres",
+						"uid": "2"
+					},
+					"fieldConfig": {
+						"defaults": {
+							"custom": {
+								"align": "auto",
+								"cellOptions": {
+									"type": "auto"
+								},
+								"inspect": false
+							},
+							"mappings": [],
+							"thresholds": {
+								"mode": "absolute",
+								"steps": [
+									{
+										"color": "green"
+									},
+									{
+										"color": "red",
+										"value": 80
+									}
+								]
+							}
+						},
+						"overrides": []
+					},
+					"gridPos": {
+						"h": 8,
+						"w": 5,
+						"x": 12,
+						"y": 9
+					},
+					"id": 8,
+					"options": {
+						"cellHeight": "sm",
+						"footer": {
+							"countRows": false,
+							"fields": "",
+							"reducer": ["sum"],
+							"show": false
+						},
+						"showHeader": true
+					},
+					"pluginVersion": "9.5.3",
+					"targets": [
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "2"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"rawQuery": true,
+							"rawSql": "SELECT \nDATE_PART('year', timestamp::date) as year,\nSUM(duration)/3600 as hours_coding\n  FROM eventmodel \n  WHERE bucket_id IN (1,5,6,7,9,10,15,16)\n  AND datastr::json->>'app' = 'Code'\n  GROUP BY 1",
+							"refId": "A",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						}
+					],
+					"title": "Time coding by year",
+					"type": "table"
+				},
+				{
+					"datasource": {
+						"type": "postgres",
+						"uid": "2"
+					},
+					"fieldConfig": {
+						"defaults": {
+							"custom": {
+								"align": "auto",
+								"cellOptions": {
+									"type": "auto"
+								},
+								"inspect": false
+							},
+							"mappings": [],
+							"thresholds": {
+								"mode": "absolute",
+								"steps": [
+									{
+										"color": "green"
+									},
+									{
+										"color": "red",
+										"value": 80
+									}
+								]
+							}
+						},
+						"overrides": []
+					},
+					"gridPos": {
+						"h": 8,
+						"w": 5,
+						"x": 17,
+						"y": 9
+					},
+					"id": 10,
+					"options": {
+						"cellHeight": "sm",
+						"footer": {
+							"countRows": false,
+							"fields": "",
+							"reducer": ["sum"],
+							"show": false
+						},
+						"showHeader": true
+					},
+					"pluginVersion": "9.5.3",
+					"targets": [
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "2"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"rawQuery": true,
+							"rawSql": "SELECT \nDATE_PART('year', timestamp::date) as year,\nSUM(duration)/3600 as hours\nFROM eventmodel \nGROUP BY 1",
+							"refId": "A",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						}
+					],
+					"title": "Time on computer (not right)",
+					"type": "table"
+				},
+				{
+					"datasource": {
+						"type": "postgres",
+						"uid": "2"
+					},
+					"fieldConfig": {
+						"defaults": {
+							"color": {
+								"mode": "continuous-RdYlGr"
+							},
+							"custom": {
+								"axisCenteredZero": false,
+								"axisColorMode": "text",
+								"axisLabel": "",
+								"axisPlacement": "auto",
+								"barAlignment": 0,
+								"drawStyle": "line",
+								"fillOpacity": 0,
+								"gradientMode": "scheme",
+								"hideFrom": {
+									"legend": false,
+									"tooltip": false,
+									"viz": false
+								},
+								"lineInterpolation": "linear",
+								"lineWidth": 1,
+								"pointSize": 5,
+								"scaleDistribution": {
+									"type": "linear"
+								},
+								"showPoints": "auto",
+								"spanNulls": false,
+								"stacking": {
+									"group": "A",
+									"mode": "none"
+								},
+								"thresholdsStyle": {
+									"mode": "dashed+area"
+								}
+							},
+							"mappings": [],
+							"thresholds": {
+								"mode": "percentage",
+								"steps": [
+									{
+										"color": "red"
+									},
+									{
+										"color": "light-red",
+										"value": 25
+									},
+									{
+										"color": "orange",
+										"value": 50
+									},
+									{
+										"color": "yellow",
+										"value": 60
+									},
+									{
+										"color": "super-light-green",
+										"value": 70
+									},
+									{
+										"color": "green",
+										"value": 80
+									}
+								]
+							},
+							"unit": "s"
+						},
+						"overrides": []
+					},
+					"gridPos": {
+						"h": 8,
+						"w": 6,
+						"x": 0,
+						"y": 17
+					},
+					"id": 7,
+					"options": {
+						"legend": {
+							"calcs": [],
+							"displayMode": "list",
+							"placement": "bottom",
+							"showLegend": true
+						},
+						"tooltip": {
+							"mode": "single",
+							"sort": "none"
+						}
+					},
+					"targets": [
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "2"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": false,
+							"rawQuery": true,
+							"rawSql": "SELECT \n  time,\n  AVG(value::FLOAT) OVER (ORDER BY time ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) as avg_screen_time\nFROM (\n  SELECT\n    zstartdate::date as time,\n    SUM(EXTRACT(EPOCH FROM (zenddate - zstartdate))) as value\n  FROM apple_screentime \n  WHERE zvaluestring = 'com.microsoft.VSCode'\n  GROUP BY 1\n) as subquery\nORDER BY 1;",
+							"refId": "apple",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							},
+							"table": "zobject"
+						},
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "2"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": false,
+							"rawQuery": true,
+							"rawSql": "SELECT \n  time,\n  AVG(value::FLOAT) OVER (ORDER BY time ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) as avg_aw_time\nFROM (\n  SELECT\n    timestamp::date as time,\n    SUM(duration) as value\n  FROM eventmodel \n  WHERE bucket_id IN (1,5,6,7,9,10,15,16)\n  AND datastr::json->>'app' = 'Code'\n  GROUP BY 1\n) as subquery\nORDER BY 1;",
+							"refId": "aw",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						}
+					],
+					"title": "Rolling Average MS on vscode",
+					"type": "timeseries"
+				}
+			],
+			"title": "coding",
+			"type": "row"
+		},
+		{
+			"collapsed": true,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 1
+			},
+			"id": 12,
+			"panels": [
+				{
+					"datasource": {
+						"type": "postgres",
+						"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+					},
+					"fieldConfig": {
+						"defaults": {
+							"color": {
+								"fixedColor": "#73BF69",
+								"mode": "continuous-RdYlGr",
+								"seriesBy": "last"
+							},
+							"custom": {
+								"axisCenteredZero": false,
+								"axisColorMode": "series",
+								"axisLabel": "minutes",
+								"axisPlacement": "auto",
+								"barAlignment": 0,
+								"drawStyle": "line",
+								"fillOpacity": 0,
+								"gradientMode": "scheme",
+								"hideFrom": {
+									"legend": false,
+									"tooltip": false,
+									"viz": false
+								},
+								"lineInterpolation": "smooth",
+								"lineStyle": {
+									"fill": "solid"
+								},
+								"lineWidth": 2,
+								"pointSize": 5,
+								"scaleDistribution": {
+									"type": "linear"
+								},
+								"showPoints": "auto",
+								"spanNulls": false,
+								"stacking": {
+									"group": "A",
+									"mode": "none"
+								},
+								"thresholdsStyle": {
+									"mode": "dashed+area"
+								}
+							},
+							"mappings": [],
+							"thresholds": {
+								"mode": "percentage",
+								"steps": [
+									{
+										"color": "red"
+									},
+									{
+										"color": "orange",
+										"value": 20
+									},
+									{
+										"color": "green",
+										"value": 80
+									}
+								]
+							}
+						},
+						"overrides": [
+							{
+								"matcher": {
+									"id": "byName",
+									"options": "month_avg"
+								},
+								"properties": [
+									{
+										"id": "color",
+										"value": {
+											"fixedColor": "blue",
+											"mode": "fixed"
+										}
+									}
+								]
+							},
+							{
+								"matcher": {
+									"id": "byName",
+									"options": "four_month_avg"
+								},
+								"properties": [
+									{
+										"id": "color",
+										"value": {
+											"fixedColor": "purple",
+											"mode": "fixed"
+										}
+									}
+								]
+							}
+						]
+					},
+					"gridPos": {
+						"h": 8,
+						"w": 9,
+						"x": 0,
+						"y": 10
+					},
+					"id": 6,
+					"options": {
+						"legend": {
+							"calcs": [],
+							"displayMode": "list",
+							"placement": "bottom",
+							"showLegend": true
+						},
+						"tooltip": {
+							"mode": "single",
+							"sort": "none"
+						}
+					},
+					"pluginVersion": "9.5.3",
+					"targets": [
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"rawQuery": true,
+							"rawSql": "SELECT \n$__timeGroup(\"startDate\"::DATE, '1w'),\nSUM(value::FLOAT) as week_avg\nFROM \"AppleStandTime\" \nGROUP BY 1",
+							"refId": "A",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						},
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": false,
+							"rawQuery": true,
+							"rawSql": "SELECT \n$__timeGroup(\"startDate\"::DATE + interval '1 month', '30d'),\nSUM(value::FLOAT)/30*6 as month_avg\nFROM \"AppleStandTime\" \nGROUP BY 1",
+							"refId": "B",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						},
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": false,
+							"rawQuery": true,
+							"rawSql": "SELECT \n$__timeGroup(\"startDate\"::DATE + interval '4 months', '120d'),\nSUM(value::FLOAT)/120*6 as four_month_avg\nFROM \"AppleStandTime\" \nGROUP BY 1",
+							"refId": "C",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						}
+					],
+					"title": "Standing Time",
+					"type": "timeseries"
+				},
+				{
+					"datasource": {
+						"type": "postgres",
+						"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+					},
+					"fieldConfig": {
+						"defaults": {
+							"color": {
+								"mode": "continuous-GrYlRd",
+								"seriesBy": "last"
+							},
+							"custom": {
+								"axisCenteredZero": false,
+								"axisColorMode": "series",
+								"axisLabel": "BPM",
+								"axisPlacement": "auto",
+								"barAlignment": 0,
+								"drawStyle": "line",
+								"fillOpacity": 0,
+								"gradientMode": "scheme",
+								"hideFrom": {
+									"legend": false,
+									"tooltip": false,
+									"viz": false
+								},
+								"lineInterpolation": "linear",
+								"lineStyle": {
+									"fill": "solid"
+								},
+								"lineWidth": 1,
+								"pointSize": 5,
+								"scaleDistribution": {
+									"type": "linear"
+								},
+								"showPoints": "auto",
+								"spanNulls": false,
+								"stacking": {
+									"group": "A",
+									"mode": "none"
+								},
+								"thresholdsStyle": {
+									"mode": "dashed+area"
+								}
+							},
+							"mappings": [],
+							"thresholds": {
+								"mode": "percentage",
+								"steps": [
+									{
+										"color": "green"
+									},
+									{
+										"color": "green",
+										"value": 25
+									},
+									{
+										"color": "#EAB839",
+										"value": 45
+									},
+									{
+										"color": "red",
+										"value": 65
+									}
+								]
+							},
+							"unit": "none"
+						},
+						"overrides": []
+					},
+					"gridPos": {
+						"h": 8,
+						"w": 8,
+						"x": 9,
+						"y": 10
+					},
+					"id": 5,
+					"interval": "5m",
+					"options": {
+						"legend": {
+							"calcs": ["min", "max", "mean"],
+							"displayMode": "table",
+							"placement": "bottom",
+							"showLegend": true
+						},
+						"tooltip": {
+							"mode": "single",
+							"sort": "asc"
+						}
+					},
+					"targets": [
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": false,
+							"rawQuery": true,
+							"rawSql": "SELECT \n  time,\n  AVG(value::FLOAT) OVER (ORDER BY time ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) as avg_\nFROM (\n  SELECT \n    \"startDate\"::DATE as time,\n    AVG(value::FLOAT) as value\n  FROM \"RestingHeartRate\" \n  GROUP BY 1\n) as subquery\nORDER BY 1;\n\n\n\n",
+							"refId": "Main",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						}
+					],
+					"title": "Weekly rolling average resting hr",
+					"type": "timeseries"
+				},
+				{
+					"datasource": {
+						"type": "postgres",
+						"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+					},
+					"fieldConfig": {
+						"defaults": {
+							"color": {
+								"fixedColor": "#73BF69",
+								"mode": "continuous-RdYlGr",
+								"seriesBy": "last"
+							},
+							"custom": {
+								"axisCenteredZero": false,
+								"axisColorMode": "series",
+								"axisLabel": "minutes",
+								"axisPlacement": "auto",
+								"barAlignment": 0,
+								"drawStyle": "line",
+								"fillOpacity": 0,
+								"gradientMode": "scheme",
+								"hideFrom": {
+									"legend": false,
+									"tooltip": false,
+									"viz": false
+								},
+								"lineInterpolation": "smooth",
+								"lineStyle": {
+									"fill": "solid"
+								},
+								"lineWidth": 2,
+								"pointSize": 5,
+								"scaleDistribution": {
+									"type": "linear"
+								},
+								"showPoints": "auto",
+								"spanNulls": false,
+								"stacking": {
+									"group": "A",
+									"mode": "none"
+								},
+								"thresholdsStyle": {
+									"mode": "dashed+area"
+								}
+							},
+							"mappings": [],
+							"thresholds": {
+								"mode": "percentage",
+								"steps": [
+									{
+										"color": "red"
+									},
+									{
+										"color": "orange",
+										"value": 20
+									},
+									{
+										"color": "green",
+										"value": 80
+									}
+								]
+							}
+						},
+						"overrides": [
+							{
+								"matcher": {
+									"id": "byName",
+									"options": "month_avg"
+								},
+								"properties": [
+									{
+										"id": "color",
+										"value": {
+											"fixedColor": "purple",
+											"mode": "continuous-greens"
+										}
+									}
+								]
+							},
+							{
+								"matcher": {
+									"id": "byName",
+									"options": "two_month_avg"
+								},
+								"properties": [
+									{
+										"id": "color",
+										"value": {
+											"fixedColor": "yellow",
+											"mode": "continuous-purples"
+										}
+									}
+								]
+							}
+						]
+					},
+					"gridPos": {
+						"h": 8,
+						"w": 9,
+						"x": 0,
+						"y": 18
+					},
+					"id": 2,
+					"options": {
+						"legend": {
+							"calcs": ["mean", "min", "max"],
+							"displayMode": "table",
+							"placement": "bottom",
+							"showLegend": true
+						},
+						"tooltip": {
+							"mode": "single",
+							"sort": "none"
+						}
+					},
+					"pluginVersion": "9.5.3",
+					"targets": [
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"rawQuery": true,
+							"rawSql": "SELECT \n$__timeGroup(\"startDate\"::DATE, '1w'),\nSUM(value::FLOAT) as week_avg\nFROM \"AppleExerciseTime\" \nGROUP BY 1",
+							"refId": "A",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						},
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": true,
+							"rawQuery": true,
+							"rawSql": "SELECT \n$__timeGroup(\"startDate\"::DATE + interval '1 month', '30d'),\nSUM(value::FLOAT)/30*6 as month_avg\nFROM \"AppleExerciseTime\" \nGROUP BY 1",
+							"refId": "B",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						},
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": true,
+							"rawQuery": true,
+							"rawSql": "SELECT \n$__timeGroup(\"startDate\"::DATE + interval '3 month', '120d'),\nSUM(value::FLOAT)/120*6 as two_month_avg\nFROM \"AppleExerciseTime\" \nGROUP BY 1",
+							"refId": "C",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						},
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": false,
+							"rawQuery": true,
+							"rawSql": "SELECT \n  time,\n  AVG(value::FLOAT) OVER (ORDER BY time ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) as rolling_weekly_avg\nFROM (\n  SELECT \n    \"startDate\"::DATE as time,\n    SUM(value::FLOAT) as value\n  FROM \"AppleExerciseTime\" \n  GROUP BY 1\n) as subquery\nORDER BY 1;\n",
+							"refId": "D",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						},
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": true,
+							"rawQuery": true,
+							"rawSql": "SELECT \n  time,\n  AVG(value::FLOAT) OVER (ORDER BY time ROWS BETWEEN 100 PRECEDING AND CURRENT ROW) as rolling_weekly_avg\nFROM (\n  SELECT \n    \"startDate\"::DATE as time,\n    SUM(value::FLOAT) as value\n  FROM \"AppleExerciseTime\" \n  GROUP BY 1\n) as subquery\nORDER BY 1;\n",
+							"refId": "E",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						}
+					],
+					"title": "Exercise Time",
+					"type": "timeseries"
+				},
+				{
+					"datasource": {
+						"type": "postgres",
+						"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+					},
+					"fieldConfig": {
+						"defaults": {
+							"color": {
+								"fixedColor": "#73BF69",
+								"mode": "continuous-RdYlGr",
+								"seriesBy": "max"
+							},
+							"custom": {
+								"axisCenteredZero": false,
+								"axisColorMode": "series",
+								"axisLabel": "steps",
+								"axisPlacement": "auto",
+								"barAlignment": 0,
+								"drawStyle": "line",
+								"fillOpacity": 0,
+								"gradientMode": "scheme",
+								"hideFrom": {
+									"legend": false,
+									"tooltip": false,
+									"viz": false
+								},
+								"lineInterpolation": "smooth",
+								"lineStyle": {
+									"fill": "solid"
+								},
+								"lineWidth": 2,
+								"pointSize": 5,
+								"scaleDistribution": {
+									"type": "linear"
+								},
+								"showPoints": "auto",
+								"spanNulls": false,
+								"stacking": {
+									"group": "A",
+									"mode": "none"
+								},
+								"thresholdsStyle": {
+									"mode": "dashed+area"
+								}
+							},
+							"mappings": [],
+							"thresholds": {
+								"mode": "percentage",
+								"steps": [
+									{
+										"color": "red"
+									},
+									{
+										"color": "orange",
+										"value": 20
+									},
+									{
+										"color": "green",
+										"value": 80
+									}
+								]
+							}
+						},
+						"overrides": [
+							{
+								"matcher": {
+									"id": "byName",
+									"options": "month_avg"
+								},
+								"properties": [
+									{
+										"id": "color",
+										"value": {
+											"fixedColor": "blue",
+											"mode": "fixed"
+										}
+									}
+								]
+							},
+							{
+								"matcher": {
+									"id": "byName",
+									"options": "two_month_avg"
+								},
+								"properties": [
+									{
+										"id": "color",
+										"value": {
+											"fixedColor": "purple",
+											"mode": "fixed"
+										}
+									}
+								]
+							},
+							{
+								"matcher": {
+									"id": "byName",
+									"options": "four_month_avg"
+								},
+								"properties": [
+									{
+										"id": "color",
+										"value": {
+											"fixedColor": "purple",
+											"mode": "fixed"
+										}
+									}
+								]
+							}
+						]
+					},
+					"gridPos": {
+						"h": 8,
+						"w": 8,
+						"x": 9,
+						"y": 18
+					},
+					"id": 3,
+					"options": {
+						"legend": {
+							"calcs": [],
+							"displayMode": "list",
+							"placement": "bottom",
+							"showLegend": true
+						},
+						"tooltip": {
+							"mode": "single",
+							"sort": "none"
+						}
+					},
+					"pluginVersion": "9.5.3",
+					"targets": [
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": false,
+							"rawQuery": true,
+							"rawSql": "SELECT \n$__timeGroup(\"startDate\"::DATE, '1w'),\nSUM(value::INT) as week_avg\nFROM \"StepCount\" \nGROUP BY 1",
+							"refId": "A",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						},
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": true,
+							"rawQuery": true,
+							"rawSql": "SELECT \n$__timeGroup(\"startDate\"::DATE + interval '1 month', '30d'),\nSUM(value::FLOAT)/30*6 as month_avg\nFROM \"StepCount\" \nGROUP BY 1",
+							"refId": "B",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						},
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": true,
+							"rawQuery": true,
+							"rawSql": "SELECT \n$__timeGroup(\"startDate\"::DATE + interval '4 months', '120d'),\nSUM(value::FLOAT)/120*6 as four_month_avg\nFROM \"StepCount\" \nGROUP BY 1",
+							"refId": "C",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						},
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": false,
+							"rawQuery": true,
+							"rawSql": "SELECT \n  time,\n  AVG(value::FLOAT) OVER (ORDER BY time ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) as rolling_weekly_avg\nFROM (\n  SELECT \n    \"startDate\"::DATE as time,\n    SUM(value::FLOAT) as value\n  FROM \"StepCount\" \n  GROUP BY 1\n) as subquery\nORDER BY 1;\n",
+							"refId": "D",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						}
+					],
+					"title": "Step Count",
+					"type": "timeseries"
+				},
+				{
+					"datasource": {
+						"type": "postgres",
+						"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+					},
+					"fieldConfig": {
+						"defaults": {
+							"color": {
+								"fixedColor": "#73BF69",
+								"mode": "continuous-RdYlGr",
+								"seriesBy": "max"
+							},
+							"custom": {
+								"axisCenteredZero": false,
+								"axisColorMode": "series",
+								"axisLabel": "steps",
+								"axisPlacement": "auto",
+								"barAlignment": 0,
+								"drawStyle": "line",
+								"fillOpacity": 0,
+								"gradientMode": "scheme",
+								"hideFrom": {
+									"legend": false,
+									"tooltip": false,
+									"viz": false
+								},
+								"lineInterpolation": "smooth",
+								"lineStyle": {
+									"fill": "solid"
+								},
+								"lineWidth": 2,
+								"pointSize": 5,
+								"scaleDistribution": {
+									"type": "linear"
+								},
+								"showPoints": "auto",
+								"spanNulls": false,
+								"stacking": {
+									"group": "A",
+									"mode": "none"
+								},
+								"thresholdsStyle": {
+									"mode": "dashed+area"
+								}
+							},
+							"mappings": [],
+							"thresholds": {
+								"mode": "percentage",
+								"steps": [
+									{
+										"color": "red"
+									},
+									{
+										"color": "orange",
+										"value": 20
+									},
+									{
+										"color": "green",
+										"value": 80
+									}
+								]
+							}
+						},
+						"overrides": [
+							{
+								"matcher": {
+									"id": "byName",
+									"options": "month_avg"
+								},
+								"properties": [
+									{
+										"id": "color",
+										"value": {
+											"fixedColor": "blue",
+											"mode": "fixed"
+										}
+									}
+								]
+							},
+							{
+								"matcher": {
+									"id": "byName",
+									"options": "two_month_avg"
+								},
+								"properties": [
+									{
+										"id": "color",
+										"value": {
+											"fixedColor": "purple",
+											"mode": "fixed"
+										}
+									}
+								]
+							},
+							{
+								"matcher": {
+									"id": "byName",
+									"options": "four_month_avg"
+								},
+								"properties": [
+									{
+										"id": "color",
+										"value": {
+											"fixedColor": "purple",
+											"mode": "fixed"
+										}
+									}
+								]
+							}
+						]
+					},
+					"gridPos": {
+						"h": 7,
+						"w": 9,
+						"x": 0,
+						"y": 26
+					},
+					"id": 4,
+					"options": {
+						"legend": {
+							"calcs": [],
+							"displayMode": "list",
+							"placement": "bottom",
+							"showLegend": true
+						},
+						"tooltip": {
+							"mode": "single",
+							"sort": "none"
+						}
+					},
+					"pluginVersion": "9.5.3",
+					"targets": [
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": false,
+							"rawQuery": true,
+							"rawSql": "SELECT \n$__timeGroup(\"startDate\"::DATE, '1w'),\nSUM(value::FLOAT) as week_avg\nFROM \"DistanceWalkingRunning\" \nGROUP BY 1",
+							"refId": "A",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							},
+							"table": "\"DistanceWalkingRunning\""
+						},
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": true,
+							"rawQuery": true,
+							"rawSql": "SELECT \n$__timeGroup(\"startDate\"::DATE + interval '1 month', '30d'),\nSUM(value::FLOAT)/30*6 as month_avg\nFROM \"StepCount\" \nGROUP BY 1",
+							"refId": "B",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						},
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": true,
+							"rawQuery": true,
+							"rawSql": "SELECT \n$__timeGroup(\"startDate\"::DATE + interval '4 months', '120d'),\nSUM(value::FLOAT)/120*6 as four_month_avg\nFROM \"StepCount\" \nGROUP BY 1",
+							"refId": "C",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						},
+						{
+							"datasource": {
+								"type": "postgres",
+								"uid": "a97c9e96-40e3-49d2-87ce-40d0c830aed4"
+							},
+							"editorMode": "code",
+							"format": "table",
+							"hide": true,
+							"rawQuery": true,
+							"rawSql": "SELECT \n  time,\n  AVG(value::FLOAT) OVER (ORDER BY time ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) as rolling_weekly_avg\nFROM (\n  SELECT \n    \"startDate\"::DATE as time,\n    SUM(value::FLOAT) as value\n  FROM \"StepCount\" \n  GROUP BY 1\n) as subquery\nORDER BY 1;\n",
+							"refId": "D",
+							"sql": {
+								"columns": [
+									{
+										"parameters": [],
+										"type": "function"
+									}
+								],
+								"groupBy": [
+									{
+										"property": {
+											"type": "string"
+										},
+										"type": "groupBy"
+									}
+								],
+								"limit": 50
+							}
+						}
+					],
+					"title": "Step Count",
+					"type": "timeseries"
+				}
+			],
+			"title": "Health Data",
+			"type": "row"
+		},
+		{
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 2
+			},
+			"id": 14,
+			"panels": [],
+			"title": "Cloudflare",
+			"type": "row"
+		},
+		{
+			"datasource": {
+				"type": "postgres",
+				"uid": "2"
+			},
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisCenteredZero": false,
+						"axisColorMode": "text",
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "auto",
+						"spanNulls": false,
+						"stacking": {
+							"group": "A",
+							"mode": "none"
+						},
+						"thresholdsStyle": {
+							"mode": "off"
+						}
+					},
+					"mappings": [],
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					}
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 12,
+				"x": 0,
+				"y": 3
+			},
+			"id": 15,
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "single",
+					"sort": "none"
+				}
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "postgres",
+						"uid": "2"
+					},
+					"editorMode": "code",
+					"format": "table",
+					"rawQuery": true,
+					"rawSql": "SELECT \n$__timeGroup(date::date, '1d'),\nSUM(requests) as requests\nFROM cloudflare_analytics\nWHERE $__timeFilter(date) \nGROUP BY 1",
+					"refId": "requests",
+					"sql": {
+						"columns": [
+							{
+								"parameters": [],
+								"type": "function"
+							}
+						],
+						"groupBy": [
+							{
+								"property": {
+									"type": "string"
+								},
+								"type": "groupBy"
+							}
+						],
+						"limit": 50
+					}
+				},
+				{
+					"datasource": {
+						"type": "postgres",
+						"uid": "2"
+					},
+					"editorMode": "code",
+					"format": "table",
+					"hide": false,
+					"rawQuery": true,
+					"rawSql": "SELECT \n$__timeGroup(date::date, '1d'),\nSUM(Uniques) as unique_visitors\nFROM cloudflare_analytics\nWHERE $__timeFilter(date) \nGROUP BY 1",
+					"refId": "unique_visitors",
+					"sql": {
+						"columns": [
+							{
+								"parameters": [],
+								"type": "function"
+							}
+						],
+						"groupBy": [
+							{
+								"property": {
+									"type": "string"
+								},
+								"type": "groupBy"
+							}
+						],
+						"limit": 50
+					}
+				}
+			],
+			"title": "Cloudflare",
+			"type": "timeseries"
+		},
+		{
+			"datasource": {
+				"type": "postgres",
+				"uid": "2"
+			},
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "thresholds"
+					},
+					"mappings": [],
+					"thresholds": {
+						"mode": "percentage",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "orange",
+								"value": 70
+							},
+							{
+								"color": "red",
+								"value": 85
+							}
+						]
+					}
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 4,
+				"x": 12,
+				"y": 3
+			},
+			"id": 16,
+			"options": {
+				"colorMode": "value",
+				"graphMode": "area",
+				"justifyMode": "auto",
+				"orientation": "auto",
+				"reduceOptions": {
+					"calcs": ["lastNotNull"],
+					"fields": "",
+					"values": false
+				},
+				"textMode": "auto"
+			},
+			"pluginVersion": "9.5.3",
+			"targets": [
+				{
+					"datasource": {
+						"type": "postgres",
+						"uid": "2"
+					},
+					"editorMode": "code",
+					"format": "table",
+					"rawQuery": true,
+					"rawSql": "SELECT \nSUM(CachedBytes)/SUM(Bytes) as cached_percentage\nFROM cloudflare_analytics\nWHERE $__timeFilter(date) ",
+					"refId": "A",
+					"sql": {
+						"columns": [
+							{
+								"parameters": [],
+								"type": "function"
+							}
+						],
+						"groupBy": [
+							{
+								"property": {
+									"type": "string"
+								},
+								"type": "groupBy"
+							}
+						],
+						"limit": 50
+					}
+				}
+			],
+			"title": "cached_bytes_percentage",
+			"type": "stat"
+		}
+	],
+	"refresh": "",
+	"schemaVersion": 38,
+	"style": "dark",
+	"tags": [],
+	"templating": {
+		"list": []
+	},
+	"time": {
+		"from": "now-6h",
+		"to": "now"
+	},
+	"timepicker": {},
+	"timezone": "",
+	"title": "Personal",
+	"uid": "b7557359-fd14-4659-9353-10eefd34782a",
+	"version": 6,
+	"weekStart": ""
+}

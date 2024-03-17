@@ -1,0 +1,90 @@
+---
+- name: Supress login message
+  file:
+    path: "/home/{{ env.USER }}/.hushlogin"
+    modification_time: preserve
+    access_time: preserve
+    state: touch
+
+- name: Enable Passwordless sudo
+  lineinfile:
+    path: /etc/sudoers
+    line: "{{ env.USER }} ALL=(ALL) NOPASSWD:ALL"
+    validate: "visudo -cf %s"
+
+- name: Update and Upgrade
+  apt:
+    upgrade: dist
+    update_cache: yes
+
+- name: Install general packages
+  apt:
+    name:
+      - python3
+      - git
+      - neovim
+      - tmux
+      - fzf
+      - curl
+      - ripgrep
+      - stow
+      - zsh
+      - gh
+
+- name: Install tailscale if not installed
+  shell: |
+    curl -fsSL https://tailscale.com/install.sh | sh
+    tailscale up --ssh --authkey {{ env.TS_AUTHKEY }} --advertise-tags=tag:prod
+
+- name: remove . files
+  file:
+    path: "/home/{{ env.USER }}/{{ item }}"
+    state: absent
+  with_items:
+    - .bashrc
+    - .bash_profile
+    - .bash_history
+    - .zshrc
+    - .zsh_history
+    - .bash_logout
+    - .config/atuin/config.toml
+    - .config/zsh/.zshrc
+
+- name: Setup dotfiles
+  git:
+    repo: "https://github.com/notedwin/dotfiles.git"
+    dest: "/home/{{ env.USER }}/dotfiles"
+    update: yes
+    force: yes
+    clone: yes
+    version: master
+  become_user: "{{ env.USER }}"
+
+- name: make .config
+  file:
+    path: "/home/{{ env.USER }}/.config"
+    state: directory
+    mode: 0755
+
+- name: Stow .zshenv
+  shell: |
+    stow -d /home/{{ env.USER }}/dotfiles -t /home/{{ env.USER }} -v zsh
+    stow -d /home/{{ env.USER }}/dotfiles -t /home/{{ env.USER }}/.config -v .config
+  become_user: "{{ env.USER }}"
+
+# set deault shell to zsh
+- name: Set default shell to zsh
+  shell:
+    cmd: chsh -s $(which zsh) {{ env.USER }}
+
+- name: install as user
+  shell: |
+    echo {{ env.GH_TOKEN }} |  gh auth login --with-token
+    export ZSH="$HOME/.config/zsh/ohmyzsh"
+    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    /bin/bash -c "$(curl --proto '=https' --tlsv1.2 -sSf https://setup.atuin.sh)"
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH}/themes/powerlevel10k
+    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH}/custom/plugins/zsh-autosuggestions
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git  ${ZSH}/custom/plugins/zsh-syntax-highlighting
+  become_user: "{{ env.USER }}"

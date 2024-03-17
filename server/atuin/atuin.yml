@@ -1,0 +1,13 @@
+- name: Run Atuin
+  docker_container:
+    name: atuin
+    image: ghcr.io/atuinsh/atuin:v18.1.0
+    command: ["server", "start"]
+    ports:
+      - "8888:8888"
+    env:
+      ATUIN_HOST: 0.0.0.0
+      ATUIN_OPEN_REGISTRATION: "true"
+      ATUIN_DB_URI: "{{ env.DATABASE_URL }}"
+    volumes:
+      - /home/{{ env.USER }}/docker/atuin:/config

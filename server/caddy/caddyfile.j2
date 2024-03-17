@@ -1,0 +1,118 @@
+{
+	email zamudio.e13@gmail.com
+	debug
+	servers {
+		metrics
+	}
+	# auto_https disable_redirects
+}
+
+:2019 {
+	metrics
+}
+
+# subdomains dont work on tailscale cert
+# {{ inventory_hostname }}.cow-ghost.ts.net {
+# 	# handle_path /code/* {
+# 	# 	reverse_proxy /* {{ ansible_default_ipv4.address }}:8443
+# 	# }
+# 	# handle_path /vault/* {
+# 	# 	reverse_proxy /* {{ ansible_default_ipv4.address }}:8080
+# 	# }
+# 	handle_path /adguard/* {
+# 		reverse_proxy /* {{ ansible_default_ipv4.address }}:81
+# 	}
+# 	handle_path /cam/* {
+# 		reverse_proxy /* {{ ansible_default_ipv4.address }}:8765
+# 	}
+# 	handle_path /portainer/* {
+# 		reverse_proxy /* portainer:9000
+# 	}
+# 	# TODO: make this a list of accesible urls
+# 	respond "hey" 200
+# }
+
+*.notedwin.com {
+	header {
+		# Enable HSTS
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		# Disable MIME sniffing
+		X-Content-Type-Options "nosniff"
+		# Enable cross-site filter (XSS) and tell browser to block detected attacks
+		X-XSS-Protection "1; mode=block"
+		# Disable content from being loaded in a frame
+		X-Frame-Options "DENY"
+		# keep the referrer from leaking
+		X-Robots-Tag "none"
+		Referrer-Policy no-refferer-when-downgrade
+		# Server name removing
+		-Server
+		header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
+	}
+
+	tls {
+		dns cloudflare {{env.CF_API}}
+		resolvers 1.1.1.1
+	}
+
+	encode zstd gzip
+
+	@grafana host grafana.notedwin.com
+	handle @grafana {
+		reverse_proxy * grafana:3000
+	}
+
+	@map host map.notedwin.com
+	handle @map {
+		redir https://grafana.notedwin.com/public-dashboards/704388cffc8944f089ab90ff756118eb permanent
+	}
+
+	@resume host resume.notedwin.com
+	handle @resume {
+		# allow htt
+		# send a file and only allow GET REQUESTS
+		root * /resume
+		rewrite * resume.pdf
+		file_server
+	}
+
+	@til host til.notedwin.com
+	handle @til {
+		# allow htt
+		# send a file and only allow GET REQUESTS
+		root * /til
+		file_server
+	}
+
+	@ntfy host ntfy.notedwin.com
+	handle @ntfy {
+		@post {
+			method POST
+		}
+		# ntfy doesnt work?
+		reverse_proxy @post {{ ansible_default_ipv4.address }}:82
+	}
+
+	handle {
+		redir https://{{env.DOMAIN}} permanent
+	}
+
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 100mb
+			roll_keep 10
+			roll_keep_for 168h
+		}
+		format console {
+			message_key msg
+			level_key level
+			time_key time
+			name_key name
+			caller_key caller
+			stacktrace_key stacktrace
+			time_format iso8601
+			time_local
+			level_format lower
+		}
+	}
+}

@@ -1,0 +1,37 @@
+---
+- name: copy over files
+  copy:
+    src: "{{ item }}"
+    dest: "/home/{{ env.USER }}/docker/caddy/{{ item }}"
+    force: yes
+  loop:
+    - dockerfile
+    - resume.pdf
+
+- name: copy templated Caddyfile
+  template:
+    src: caddyfile.j2
+    dest: "/home/{{ env.USER }}/docker/caddy/Caddyfile"
+    force: yes
+
+- name: Build Docker image
+  docker_image:
+    name: caddy-ts
+    source: build
+    build:
+      path: "/home/{{ env.USER }}/docker/caddy/"
+
+- name: Run Caddy
+  docker_container:
+    name: caddy
+    image: caddy-ts
+    ports:
+      - "80:80"
+      - "443:443"
+      - "2019:2019"
+    volumes:
+      - /home/{{ env.USER }}/docker/caddy/data:/data
+      - /home/{{ env.USER }}/docker/caddy:/config
+      - /var/log/caddy/:/var/log/caddy/
+      - /home/{{ env.USER }}/docker/caddy/resume.pdf:/resume/resume.pdf
+      - /home/{{ env.USER }}/til/:/til/
