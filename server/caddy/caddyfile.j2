@@ -57,30 +57,24 @@
 
 	encode zstd gzip
 
-	@grafana host grafana.notedwin.com
-	handle @grafana {
-		reverse_proxy * grafana:3000
-	}
-
 	@map host map.notedwin.com
 	handle @map {
-		redir https://grafana.notedwin.com/public-dashboards/704388cffc8944f089ab90ff756118eb permanent
+		root * /map
+		file_server
+	}
+
+	@chi host chi.notedwin.com
+	handle @chi {
+		root * /chi
+		file_server
 	}
 
 	@resume host resume.notedwin.com
 	handle @resume {
 		# allow htt
 		# send a file and only allow GET REQUESTS
-		root * /resume
+		root * /files
 		rewrite * resume.pdf
-		file_server
-	}
-
-	@til host til.notedwin.com
-	handle @til {
-		# allow htt
-		# send a file and only allow GET REQUESTS
-		root * /til
 		file_server
 	}
 

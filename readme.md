@@ -4,8 +4,20 @@
   <img src="tower.png" alt="tower" width="200"/>
 </div>
 
-Ansible Monorepo is a collection of server configuration files, mainly ansible playbooks for a clean Debian-based server (or Laptop) with my dotfiles and applications.
-It assumes you have sudo privileges and a public SSH key already setup.
+Ansible Monorepo is a collection of server configuration files for my homelab.
+Devices included:
+
+- SFF PC (main server)
+- OpenWRT Router
+- Raspberry Pi as a camera
+- Laptop
+
+All devices are running Debian-based OS and assumed to have sudo privileges and a public SSH key already setup.
+
+## Rules
+
+Do not configure anything manually. Use Ansible to automate the process.
+Do not install anything on the host machine. Use Docker to run applications.
 
 ## Folder Outline
 

@@ -1,12 +1,38 @@
 ---
-- name: copy over files
+- name: create folders for caddy
+  file:
+    path: "/home/{{ env.USER }}/docker/caddy/{{ item }}"
+    state: directory
+  loop:
+    - chi
+    - map
+    - files
+
+- name: copy over config files
   copy:
     src: "{{ item }}"
     dest: "/home/{{ env.USER }}/docker/caddy/{{ item }}"
     force: yes
   loop:
     - dockerfile
-    - resume.pdf
+
+- name: copy over resume
+  copy:
+    src: "resume.pdf"
+    dest: "/home/{{ env.USER }}/docker/caddy/files/resume.pdf"
+    force: yes
+
+- name: copy over map html
+  copy:
+    src: "/Users/edwinzamudio/notedwin/projects/datacow/fav_places/output/map.html"
+    dest: "/home/{{ env.USER }}/docker/caddy/chi/index.html"
+    force: yes
+
+- name: copy over evidence.dev
+  copy:
+    src: "/Users/edwinzamudio/notedwin/projects/datacow/visual/build/"
+    dest: "/home/{{ env.USER }}/docker/caddy/map/"
+    force: yes
 
 - name: copy templated Caddyfile
   template:
@@ -30,8 +56,9 @@
       - "443:443"
       - "2019:2019"
     volumes:
+      - /home/{{ env.USER }}/docker/caddy/Caddyfile:/etc/caddy/Caddyfile
       - /home/{{ env.USER }}/docker/caddy/data:/data
-      - /home/{{ env.USER }}/docker/caddy:/config
       - /var/log/caddy/:/var/log/caddy/
-      - /home/{{ env.USER }}/docker/caddy/resume.pdf:/resume/resume.pdf
-      - /home/{{ env.USER }}/til/:/til/
+      - /home/{{ env.USER }}/docker/caddy/files/:/files/
+      - /home/{{ env.USER }}/docker/caddy/chi/:/chi/
+      - /home/{{ env.USER }}/docker/caddy/map/:/map/
