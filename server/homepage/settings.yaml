@@ -1,7 +1,7 @@
 title: notedwin -- Home
 cardBlur: sm
-# theme: dark
-# color: slate
+theme: dark
+color: neutral
 
 layout:
   Media:

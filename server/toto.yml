@@ -1,0 +1,36 @@
+---
+- name: Setup toto server
+  hosts: toto
+  gather_facts: true
+  become: true
+  tasks:
+    - name: Get env file content
+      include_vars:
+        file: env.yml
+        name: env
+    # manually install sudo + adduser for now
+    # ssh-copy-id 192.168
+    # ssh
+    # su -l
+    # adduser <username> sudo
+
+    # - name: Set become password
+    #   set_fact:
+    #     ansible_become_pass: "{{ env.ANSIBLE_BECOME_PASS }}"
+
+    # - name: Run general setup
+    #   include_tasks: general-setup/general-setup.yml
+
+    - name: Install pip and docker using geerlingguy roles
+      include_role:
+        name: geerlingguy.pip
+
+    - name: Install docker from role
+      include_role:
+        name: geerlingguy.docker
+
+    - name: Install docker extra packages
+      apt:
+        name:
+          - docker-compose-plugin
+          - python3-docker

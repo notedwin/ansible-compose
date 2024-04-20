@@ -17,7 +17,7 @@
 - name: Run homepage container
   docker_container:
     name: homepage
-    image: ghcr.io/benphelps/homepage:latest
+    image: ghcr.io/gethomepage/homepage:latest
     ports:
       - "2000:3000/tcp"
     volumes:

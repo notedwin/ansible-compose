@@ -1,6 +1,6 @@
 ---
 - name: Setup homelab main
-  hosts: notedwin
+  hosts: spark
   gather_facts: true
   become: true
   module_defaults:
@@ -24,40 +24,11 @@
 
   tasks:
     - name: Get env file content
-      ansible.builtin.include_vars:
+      include_vars:
         file: env.yml
         name: env
-
-    - name: Create docker folder
-      ansible.builtin.file:
-        path: "/home/{{ env.USER }}/docker/{{ item }}"
-        state: directory
-      loop:
-        - postgres
-        - atuin
-        - caddy
-        - homepage
-        - ntfy
-        - prometheus
-        - adguard
-        - ntfy
-        - grafana
-        - homeassistant
-        - motioneye
-        - portainer
 
     - name: Install things
       ansible.builtin.include_tasks: "{{ item }}/{{ item }}.yml"
       loop:
-        - general-setup
-        - main-setup
-        - postgres
-        - atuin
-        - caddy
         - homepage
-        - ntfy
-        - prometheus
-        - adguard
-        - ntfy
-        - grafana
-        - misc

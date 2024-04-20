@@ -30,6 +30,8 @@
       - stow
       - zsh
       - gh
+      - htop
+      - rsync
 
 - name: Install tailscale if not installed
   shell: |
@@ -65,6 +67,7 @@
     path: "/home/{{ env.USER }}/.config"
     state: directory
     mode: 0755
+  become_user: "{{ env.USER }}"
 
 - name: Stow .zshenv
   shell: |

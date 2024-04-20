@@ -1,49 +1,66 @@
 - Bruh:
     - Adguard:
         icon: adguard-home.png
-        href: "http://{{ ansible_default_ipv4.address }}:81"
+        href: "http://{{ ansible_hostname }}:3001"
         container: adguard
         widget:
           type: adguard
-          url: "http://{{ ansible_default_ipv4.address }}:81"
+          url: "http://{{ ansible_hostname }}:3001"
           username: {{ env.USER }}
-          password: {{ env.PASSWORD }}
+          password: {{ env.QUICK_PASS }}
 
     - Grafana:
         icon: grafana.png
-        href: "http://{{ ansible_default_ipv4.address }}:3000"
+        href: "http://{{ ansible_hostname }}:3000"
         container: grafana
         widget:
           type: grafana
-          url: "http://{{ ansible_default_ipv4.address }}:3000"
+          url: "http://{{ ansible_hostname }}:3000"
           username: {{ env.USER }}
           password: {{ env.PASSWORD }}
 
     - Home Assistant:
         icon: home-assistant.png
-        href: "http://{{ ansible_default_ipv4.address }}:8123"
+        href: "http://{{ ansible_hostname }}:8123"
         container: homeassistant
-    - Dagster:
-        icon: upsnap.png
-        href: "http://{{ ansible_default_ipv4.address }}:3001"
-        container: dagit
 
     - Motioneye:
         icon: motioneye.png
-        href: "http://{{ ansible_default_ipv4.address }}:8765"
+        href: "http://{{ ansible_hostname }}:8765"
         container: motioneye
 
+    - Infisical:
+        icon: docuseal.png
+        href: "http://{{ ansible_hostname }}:8080"
+        container: infisical
 - Bruh2:
     - Tailscale:
         icon: tailscale.png
         href: https://tailscale.com
         widget:
           type: tailscale
-          deviceid: nmZg8j1CNTRL
+          deviceid: nHJH1ys4p721CNTRL
           key: {{ env.TS_API }}
     - Prometheus:
         icon: prometheus.png
         container: prometheus
         widget:
           type: prometheus
-          url: "http://{{ ansible_default_ipv4.address }}:9090"
+          url: "http://{{ ansible_hostname }}:9090"
+
+    - Caddy:
+        icon: caddy.png
+        container: caddy
+        widget:
+          type: caddy
+          url: "http://{{ ansible_hostname }}:2019"
+          
+    
+    - Healthchecks:
+        icon: healthchecks.png
+        href: "http://{{ ansible_hostname }}:8002"
+        container: healthchecks
+        widget:
+          type: healthchecks
+          url: "http://{{ ansible_hostname }}:8002"
+          key: {{ env.HOMEPAGE_API }}
