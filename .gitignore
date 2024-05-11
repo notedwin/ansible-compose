@@ -13,3 +13,6 @@ backup/
 # openwrt debug logs
 router/
 k3s/
+.DS_Store
+.vscode/
+k3s-ansible/

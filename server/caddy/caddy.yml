@@ -22,6 +22,12 @@
     dest: "/home/{{ env.USER }}/docker/caddy/files/resume.pdf"
     force: yes
 
+- name: copy over fake 404
+  copy:
+    src: "404.html"
+    dest: "/home/{{ env.USER }}/docker/caddy/files/404.html"
+    force: yes
+
 - name: copy over map html
   copy:
     src: "/Users/edwinzamudio/notedwin/projects/datacow/fav_places/output/map.html"

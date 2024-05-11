@@ -13,7 +13,7 @@
       - "53:53/udp"
       - "81:80/tcp"
       - "853:853/tcp"
-      - "3001:3000/tcp"
+      - "3002:3000/tcp"
     volumes:
       - /home/{{ env.USER }}/docker/adguard:/opt/adguardhome/work
       - /home/{{ env.USER }}/docker/adguard:/opt/adguardhome/conf

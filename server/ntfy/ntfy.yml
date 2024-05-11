@@ -1,16 +1,23 @@
 ---
-- name: copy templated config file
-  template:
-    src: ntfy.j2
-    dest: "/home/{{ env.USER }}/docker/ntfy/server.yml"
-
+# create admin user and token by opening shell
 - name: Run ntfy.com
   docker_container:
     name: ntfy
     image: binwiederhier/ntfy
+    user: "1000:1000"
     command:
       - serve
     ports:
-      - "82:80"
+      - "2586:2586"
     volumes:
-      - /home/{{ env.USER }}/docker/ntfy/server.yml:/etc/ntfy/server.yml
+      - /home/{{ env.USER }}/docker/ntfy:/var/lib/ntfy
+    env:
+      NTFY_BASE_URL: https://ntfy.notedwin.com
+      NTFY_CACHE_FILE: /var/lib/ntfy/cache.db
+      NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
+      NTFY_AUTH_DEFAULT_ACCESS: deny-all
+      NTFY_BEHIND_PROXY: "true"
+      NTFY_ENABLE_LOGIN: "true"
+      NTFY_UPSTREAM_BASE_URL: https://ntfy.sh
+      NTFY_LISTEN_HTTP: :2586
+      NTFY_WEB_ROOT: disable

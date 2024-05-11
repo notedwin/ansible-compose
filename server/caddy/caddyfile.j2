@@ -59,8 +59,7 @@
 
 	@map host map.notedwin.com
 	handle @map {
-		root * /map
-		file_server
+		respond "hi, project has been deprecated" 200
 	}
 
 	@chi host chi.notedwin.com
@@ -78,13 +77,22 @@
 		file_server
 	}
 
+	@dev host dev.notedwin.com
+	handle @dev {
+		root * /files
+		rewrite * 404.html
+		file_server
+	}
+
+	@blog host xn--wxa864o.notedwin.com
+	handle @blog {
+		root * /map
+		file_server
+	}
+
 	@ntfy host ntfy.notedwin.com
 	handle @ntfy {
-		@post {
-			method POST
-		}
-		# ntfy doesnt work?
-		reverse_proxy @post {{ ansible_default_ipv4.address }}:82
+		reverse_proxy {{ ansible_default_ipv4.address }}:2586
 	}
 
 	handle {

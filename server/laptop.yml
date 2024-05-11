@@ -13,6 +13,7 @@
     # ssh
     # su -l
     # adduser <username> sudo
+    # sudo ip link property add dev enp0s31f6 altname eno1 # for k3s to work
 
     - name: Set become password
       set_fact:

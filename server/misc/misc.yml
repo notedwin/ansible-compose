@@ -44,3 +44,34 @@
     env: TZ=America/Chicago
       PUID=1000
       PGID=100
+
+- name: Health Checks
+  community.docker.docker_container:
+    name: healthchecks
+    image: healthchecks/healthchecks:latest
+    ports:
+      - "8002:8000"
+    volumes:
+      # chmod 0777 and chown 999:999
+      - /home/{{ env.USER }}/docker/healthchecks:/data
+    env:
+      DB: sqlite
+      DB_NAME: /data/hc.sqlite
+      DEBUG: "False"
+      DEFAULT_FROM_EMAIL: femail@email.org
+      EMAIL_HOST: fixme-smtp-host-here
+      EMAIL_HOST_PASSWORD: fixme-smtp-password-here
+      EMAIL_HOST_USER: fixme-smtp-username-here
+      EMAIL_PORT: "587"
+      SECRET_KEY: b553f395-2aa1-421a-bcf5-d1c1456776d7
+      SITE_ROOT: http://spark:8002
+
+- name: install homebridge
+  docker_container:
+    network_mode: host
+    name: homebridge
+    image: homebridge/homebridge:latest
+    ports:
+      - "8581:8581"
+    volumes:
+      - /home/{{ env.USER }}/docker/homebridge:/homebridge
