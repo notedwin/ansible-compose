@@ -1,4 +1,3 @@
-
 ###############################################
 # General parameters
 
@@ -167,7 +166,7 @@ hlsPartDuration: 200ms
 hlsSegmentMaxSize: 50M
 # Value of the Access-Control-Allow-Origin header provided in every HTTP response.
 # This allows to play the HLS stream from an external website.
-hlsAllowOrigin: '*'
+hlsAllowOrigin: "*"
 # List of IPs or CIDRs of proxies placed before the HLS server.
 # If the server receives a request from one of these entries, IP in logs
 # will be taken from the X-Forwarded-For header.
@@ -175,7 +174,7 @@ hlsTrustedProxies: []
 # Directory in which to save segments, instead of keeping them in the RAM.
 # This decreases performance, since reading from disk is less performant than
 # reading from RAM, but allows to save RAM.
-hlsDirectory: ''
+hlsDirectory: ""
 
 ###############################################
 # WebRTC parameters
@@ -195,7 +194,7 @@ webrtcServerKey: server.key
 webrtcServerCert: server.crt
 # Value of the Access-Control-Allow-Origin header provided in every HTTP response.
 # This allows to play the WebRTC stream from an external website.
-webrtcAllowOrigin: '*'
+webrtcAllowOrigin: "*"
 # List of IPs or CIDRs of proxies placed before the WebRTC server.
 # If the server receives a request from one of these entries, IP in logs
 # will be taken from the X-Forwarded-For header.
@@ -275,7 +274,7 @@ paths:
     # H264 profile
     rpiCameraProfile: main
     # H264 level
-    rpiCameraLevel: '4.1'
+    rpiCameraLevel: "4.1"
     # Autofocus mode
     # values: auto, manual, continuous
     rpiCameraAfMode: auto

@@ -30,3 +30,13 @@ Do not install anything on the host machine. Use Docker to run applications.
 ## Motivation
 
 I moved my configuration from bash scripts -> ansible and docker since it seperates my applications into containers. This removes some dependency problems I was running into. Also, remvoing having to type commands into a server over SSH which gets repetive and error-prone.
+
+## Quick Fix
+
+```bash
+sudo chown -R notedwin:notedwin n8n
+```
+
+Moving guide:
+Doing channel analysis and setting best wifi options for new location
+Changing static ip to new address in Cloudflare

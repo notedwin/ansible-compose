@@ -10,4 +10,4 @@
       ATUIN_OPEN_REGISTRATION: "true"
       ATUIN_DB_URI: "{{ env.DATABASE_URL }}"
     volumes:
-      - /home/{{ env.USER }}/docker/atuin:/config
+      - "{{ env.DOCKER_PATH }}/atuin:/config"

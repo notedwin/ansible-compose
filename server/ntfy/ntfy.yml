@@ -10,7 +10,7 @@
     ports:
       - "2586:2586"
     volumes:
-      - /home/{{ env.USER }}/docker/ntfy:/var/lib/ntfy
+      - "{{ env.DOCKER_PATH }}/ntfy:/var/lib/ntfy"
     env:
       NTFY_BASE_URL: https://ntfy.notedwin.com
       NTFY_CACHE_FILE: /var/lib/ntfy/cache.db

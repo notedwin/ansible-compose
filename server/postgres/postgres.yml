@@ -2,7 +2,7 @@
 - name: Copy PostgreSQL config file
   copy:
     src: postgresql.conf
-    dest: /home/{{ env.USER }}/docker/postgres/postgresql.conf
+    dest: "{{ env.DOCKER_PATH }}/postgres/postgresql.conf"
     force: yes
 
 - name: Run postgres container
@@ -10,24 +10,27 @@
     name: postgres
     image: postgres:15
     volumes:
-      - /home/{{ env.USER }}/docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
-      - /home/{{ env.USER }}/docker/postgres/data:/var/lib/postgresql/data
+      - "{{ env.DOCKER_PATH }}/postgres/postgresql.conf:/etc/postgresql/postgresql.conf"
+      - "{{ env.DOCKER_PATH }}/postgres/data:/var/lib/postgresql/data"
     env: POSTGRES_USER={{ env.USER }}
       POSTGRES_PASSWORD={{ env.PASSWORD }}
     ports:
       - "5432:5432"
 
-- name: postgres_backup
+- name: Postgres_backup
   docker_container:
     name: db_dumper
     image: prodrigestivill/postgres-backup-local
-    user: postgres:postgres
     env:
-      POSTGRES_HOST: {{ ansible_default_ipv4.address }}
+      POSTGRES_HOST: "{{ ansible_default_ipv4.address }}"
       POSTGRES_DB: atuin,logs,apple
       POSTGRES_USER: "{{ env.USER }}"
       POSTGRES_PASSWORD: "{{ env.PASSWORD }}"
-      schedule: "@daily"
+      SCHEDULE: "@weekly"
       BACKUP_DIR: /db_dumps
+      BACKUP_ON_START: "TRUE"
+      VALIDATE_ON_START: "TRUE"
+      BACKUP_KEEP_MINS: "30000"
+      # WEBHOOK_URL: "http://192.168.0.200:8002/ping/d8f26383-c990-4a6e-82a3-b8a2ac455d96" -- figure out healthchecks
     volumes:
-      - /home/{{ env.USER }}/docker/backups:/db_dumps
+      - "{{ env.DOCKER_PATH }}/backups:/db_dumps"

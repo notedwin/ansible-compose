@@ -1,0 +1,81 @@
+theme:
+  background-color: 50 1 6
+  primary-color: 24 97 58
+  negative-color: 209 88 54
+
+pages:
+  - name: Home
+    columns:
+      - size: small
+        widgets:
+          - type: dns-stats
+            service: adguard
+            url: http://{{ ansible_hostname }}:3003
+            username: {{ env.user }}
+            password: {{ env.quickpass }}
+
+          - type: monitor
+            cache: 1m
+            title: Services
+            sites:
+              - title: Edwin
+                url: http://notedwin.com
+                icon: si:webassembly
+              
+              - title: Healthchecks
+                url: http://{{ ansible_hostname }}:8002
+                icon: si:checkmarx
+
+              - title: Infisical
+                url: http://{{ ansible_hostname }}:8080
+                icon: si:awssecretsmanager
+              
+              - title: Home Bridge
+                url: http://{{ ansible_hostname }}:8581
+                icon: si:homebridge
+
+              - title: Beszel
+                url: http://{{ ansible_hostname }}:8090
+                icon: si:prometheus
+          
+
+      - size: full
+        widgets:
+          - type: hacker-news
+
+          # - type: videos
+          #   channels:
+          #     - UCR-DXc1voovS8nhAvccRZhg # Jeff Geerling
+          #     - UCv6J_jJa8GJqFwQNgNrMuww # ServeTheHome
+          #     - UCOk-gHyjcWZNj3Br4oxwh0A # Techno Tim
+
+          # - type: reddit
+          #   subreddit: selfhosted
+
+      - size: small
+        widgets:
+          - type: search
+            search-engine: google
+            new-tab: true
+            bangs:
+              - title: YouTube
+                shortcut: "!yt"
+                url: https://www.youtube.com/results?search_query={QUERY}
+            
+          - type: weather
+            location: Chicago, United States
+            units: imperial
+            show-area-name: true
+
+          - type: markets
+            markets:
+              - symbol: MCD
+                name: Mcdonalds
+              - symbol: AMGN
+                name: Amgen
+              - symbol: TSLA
+                name: Tesla
+              - symbol: NVDA
+                name: NVIDIA
+              - symbol: AAPL
+                name: Apple

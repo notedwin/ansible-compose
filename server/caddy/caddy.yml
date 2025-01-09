@@ -1,7 +1,7 @@
 ---
 - name: create folders for caddy
   file:
-    path: "/home/{{ env.USER }}/docker/caddy/{{ item }}"
+    path: "{{ env.DOCKER_PATH }}/caddy/{{ item }}"
     state: directory
   loop:
     - chi
@@ -11,39 +11,33 @@
 - name: copy over config files
   copy:
     src: "{{ item }}"
-    dest: "/home/{{ env.USER }}/docker/caddy/{{ item }}"
+    dest: "{{ env.DOCKER_PATH }}/caddy/{{ item }}"
     force: yes
   loop:
     - dockerfile
 
-- name: copy over resume
+- name: copy over files folders
   copy:
-    src: "resume.pdf"
-    dest: "/home/{{ env.USER }}/docker/caddy/files/resume.pdf"
-    force: yes
-
-- name: copy over fake 404
-  copy:
-    src: "404.html"
-    dest: "/home/{{ env.USER }}/docker/caddy/files/404.html"
+    src: files/
+    dest: "{{ env.DOCKER_PATH }}/caddy/files/"
     force: yes
 
 - name: copy over map html
   copy:
     src: "/Users/edwinzamudio/notedwin/projects/datacow/fav_places/output/map.html"
-    dest: "/home/{{ env.USER }}/docker/caddy/chi/index.html"
+    dest: "{{ env.DOCKER_PATH }}/caddy/chi/index.html"
     force: yes
 
 - name: copy over evidence.dev
   copy:
-    src: "/Users/edwinzamudio/notedwin/projects/datacow/visual/build/"
-    dest: "/home/{{ env.USER }}/docker/caddy/map/"
+    src: "/Users/edwinzamudio/notedwin/projects/tiny-spider/evid-dash/build/"
+    dest: "{{ env.DOCKER_PATH }}/caddy/map/"
     force: yes
 
 - name: copy templated Caddyfile
   template:
     src: caddyfile.j2
-    dest: "/home/{{ env.USER }}/docker/caddy/Caddyfile"
+    dest: "{{ env.DOCKER_PATH }}/caddy/Caddyfile"
     force: yes
 
 - name: Build Docker image
@@ -51,7 +45,7 @@
     name: caddy-ts
     source: build
     build:
-      path: "/home/{{ env.USER }}/docker/caddy/"
+      path: "{{ env.DOCKER_PATH }}/caddy/"
 
 - name: Run Caddy
   docker_container:
@@ -62,9 +56,11 @@
       - "443:443"
       - "2019:2019"
     volumes:
-      - /home/{{ env.USER }}/docker/caddy/Caddyfile:/etc/caddy/Caddyfile
-      - /home/{{ env.USER }}/docker/caddy/data:/data
+      - "{{ env.DOCKER_PATH }}/caddy/Caddyfile:/etc/caddy/Caddyfile"
+      - "{{ env.DOCKER_PATH }}/caddy/data:/data"
       - /var/log/caddy/:/var/log/caddy/
-      - /home/{{ env.USER }}/docker/caddy/files/:/files/
-      - /home/{{ env.USER }}/docker/caddy/chi/:/chi/
-      - /home/{{ env.USER }}/docker/caddy/map/:/map/
+      - "{{ env.DOCKER_PATH }}/caddy/files/:/files/"
+      - "{{ env.DOCKER_PATH }}/caddy/chi/:/chi/"
+      - "{{ env.DOCKER_PATH }}/caddy/map/:/map/"
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"

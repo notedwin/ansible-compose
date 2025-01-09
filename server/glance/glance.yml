@@ -1,0 +1,21 @@
+---
+- name: create dir for glance
+  file:
+    path: "{{ env.DOCKER_PATH }}/glance"
+    state: directory
+
+- name: Copy config
+  template:
+    src: glance.j2
+    dest: "{{ env.DOCKER_PATH }}/glance/glance.yml"
+
+- name: Run glance
+  docker_container:
+    name: glance
+    image: glanceapp/glance
+    ports:
+      - "2000:8080"
+    volumes:
+      - "{{ env.DOCKER_PATH }}/glance/glance.yml:/app/glance.yml"
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro

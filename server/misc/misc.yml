@@ -6,14 +6,14 @@
     ports:
       - "8765:8765"
     volumes:
-      - /home/{{env.USER}}/docker/motioneye:/etc/motioneye
-      - /home/{{env.USER}}/docker/motioneye:/var/lib/motioneye
+      - "{{ env.DOCKER_PATH }}/motioneye:/etc/motioneye"
+      - "{{ env.DOCKER_PATH }}/motioneye:/var/lib/motioneye"
       - /etc/localtime:/etc/localtime:ro
 
 - name: Run watchtowrr container
   docker_container:
     name: watchtower
-    image: containrrr/watchtower:1.6.0
+    image: containrrr/watchtower:1.7.1
     command: ["--cleanup"]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -30,7 +30,7 @@
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/volumes:/var/lib/docker/volumes
-      - /home/{{env.USER}}/docker/portainer:/data
+      - "{{ env.DOCKER_PATH }}/portainer:/data"
 
 - name: Run Homeassistant container
   docker_container:
@@ -39,7 +39,7 @@
     ports:
       - "8123:8123"
     volumes:
-      - /home/{{env.USER}}/docker/homeassistant:/config
+      - "{{ env.DOCKER_PATH }}/homeassistant:/config"
       - /etc/localtime:/etc/localtime:ro
     env: TZ=America/Chicago
       PUID=1000
@@ -53,7 +53,7 @@
       - "8002:8000"
     volumes:
       # chmod 0777 and chown 999:999
-      - /home/{{ env.USER }}/docker/healthchecks:/data
+      - "{{ env.DOCKER_PATH }}/healthchecks:/data"
     env:
       DB: sqlite
       DB_NAME: /data/hc.sqlite
@@ -68,10 +68,44 @@
 
 - name: install homebridge
   docker_container:
-    network_mode: host
     name: homebridge
     image: homebridge/homebridge:latest
     ports:
       - "8581:8581"
     volumes:
-      - /home/{{ env.USER }}/docker/homebridge:/homebridge
+      - "{{ env.DOCKER_PATH }}/homebridge:/homebridge"
+
+- name: Run Beszel
+  docker_container:
+    name: beszel
+    network_mode: host
+    image: henrygd/beszel:latest
+    etc_hosts: # extra_hosts:
+      host.docker.internal: host-gateway
+    volumes:
+      - "{{ env.DOCKER_PATH }}/beszel:/beszel_data"
+
+- name: Run Beszel Agent
+  docker_container:
+    name: beszel-agent
+    image: henrygd/beszel-agent:latest
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    env:
+      PORT: "45876"
+      KEY: "{{ env.BESZEL_KEY }}"
+
+    # - name: Code server
+    #   community.docker.docker_container:
+    #     name: code-server
+    #     user: 0:0
+    #     image: codercom/code-server:latest
+    #     ports:
+    #       - "3002:8080"
+    #     env:
+    #       DOCKER_USER: root
+    #     volumes:
+    #       - /home/{{ env.USER }}/docker/code-server/project:/root/project
+    #       - /home/{{ env.USER }}/docker/code-server/.config:/root/.config
+    #       - /home/{{ env.USER }}/docker/code-server/.local:/root/.local

@@ -2,18 +2,18 @@
 - name: Copy template adguard config
   template:
     src: adguard.j2
-    dest: "/home/{{ env.USER }}/docker/adguard/AdGuardHome.yaml"
+    dest: "{{ env.DOCKER_PATH }}/adguard/AdGuardHome.yaml"
 
 - name: Run adguard container
   docker_container:
     name: adguard
-    image: adguard/adguardhome
+    image: adguard/adguardhome # no pin needed
     ports:
       - "53:53/tcp"
       - "53:53/udp"
       - "81:80/tcp"
       - "853:853/tcp"
-      - "3002:3000/tcp"
+      - "3003:3000/tcp"
     volumes:
-      - /home/{{ env.USER }}/docker/adguard:/opt/adguardhome/work
-      - /home/{{ env.USER }}/docker/adguard:/opt/adguardhome/conf
+      - "{{ env.DOCKER_PATH }}/adguard:/opt/adguardhome/work"
+      - "{{ env.DOCKER_PATH }}/adguard:/opt/adguardhome/conf"

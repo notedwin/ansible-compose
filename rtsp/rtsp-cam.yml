@@ -1,0 +1,68 @@
+---
+- name: Setup cam server
+  hosts: cam
+  gather_facts: true
+  become: true
+  module_defaults:
+    docker_container:
+      state: started
+      network_mode: net
+      restart_policy: unless-stopped
+      restart: true
+    file:
+      owner: notedwin
+      group: notedwin
+      mode: "0775"
+    template:
+      owner: notedwin
+      group: notedwin
+      mode: "0775"
+    copy:
+      owner: notedwin
+      group: notedwin
+      mode: "0775"
+
+  tasks:
+    - name: Get env file content
+      ansible.builtin.include_vars:
+        file: env.yml
+        name: env
+
+- name: Install utils
+  ansible.builtin.apt:
+    name:
+      - v4l2loopback-dkms
+      - v4l-utils
+      - ffmpeg
+      - ca-certificates
+      - curl
+      - gnupg
+      - python3
+      - git
+      - python3-pip
+      - libcamera0
+      - libfreetype6
+      - zsh
+      - neovim
+    update_cache: true
+
+- name: copy templated rtsp config
+  copy:
+    src: config.yml
+    dest: "/home/{{env.USER}}/mediamtx.yml"
+
+- name: Run rtsp simple server
+  docker_container:
+    name: rtsp
+    image: bluenviron/mediamtx:latest-ffmpeg-rpi
+    privileged: true
+    tmpfs:
+      - /dev/shm:exec
+    volumes:
+      - /run/udev:/run/udev:ro
+      - /home/notedwin/mediamtx.yml:/mediamtx.yml
+    env:
+      MTX_PATHS_CAM_SOURCE: rpiCamera
+    ports:
+      - "8554:8554/tcp"
+      - "8888:8888/tcp"
