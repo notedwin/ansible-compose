@@ -1,0 +1,41 @@
+---
+- name: Infisical-db-migration
+  community.docker.docker_container:
+    name: infisical-db-migration
+    image: infisical/infisical:v0.99.0-postgres
+    command: npm run migration:latest
+    auto_remove: true
+    restart: false
+    restart_policy: false
+    env:
+      DB_CONNECTION_URI: "{{ env.INFISICAL_DB }}"
+      ENCRYPTION_KEY: "{{ env.INFIS_KEY }}"
+      AUTH_SECRET: "{{ env.INFIS_SECRET }}"
+
+- name: Infisical-backend
+  community.docker.docker_container:
+    name: infisical-backend
+    image: infisical/infisical:v0.99.0-postgres
+    ports:
+      - "8080:8080"
+    env:
+      NODE_ENV: production
+      DB_CONNECTION_URI: "{{ env.INFISICAL_DB }}"
+      REDIS_URL: "redis://{{ ansible_hostname }}:6379"
+      SITE_URL: http://localhost:8080
+      ENCRYPTION_KEY: "{{ env.INFIS_KEY }}"
+      AUTH_SECRET: "{{ env.INFIS_SECRET }}"
+    volumes:
+      - "{{ env.DOCKER_PATH }/infisical:/data"
+
+- name: Redis
+  community.docker.docker_container:
+    name: redis
+    image: redis:bookworm
+    ports:
+      - "6379:6379"
+    volumes:
+      - "{{ env.DOCKER_PATH }/redis:/data"
+    env:
+      ALLOW_EMPTY_PASSWORD: "yes"
+      REDIS_URL: redis://0.0.0.0:6379

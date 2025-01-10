@@ -62,8 +62,14 @@
 		respond "hi, project has been deprecated" 200
 	}
 
-	@chi host chi.notedwin.com
+	@chi host chicago.notedwin.com
 	handle @chi {
+		root * /chi
+		file_server
+	}
+
+	@eat host eatchi.notedwin.com
+	handle @eat {
 		root * /chi
 		file_server
 	}
@@ -84,7 +90,7 @@
 		file_server
 	}
 
-	@blog host xn--wxa864o.notedwin.com
+	@blog host how.notedwin.com
 	handle @blog {
 		root * /map
 		file_server

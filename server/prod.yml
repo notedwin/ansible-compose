@@ -1,6 +1,5 @@
----
 - name: Setup homelab main
-  hosts: notedwin
+  hosts: spark
   gather_facts: true
   become: true
   module_defaults:
@@ -29,14 +28,15 @@
         name: env
 
     - name: Create docker folder
-      ansible.builtin.file:
+      file:
         path: "/home/{{ env.USER }}/docker/{{ item }}"
         state: directory
       loop:
         - postgres
         - atuin
         - caddy
-        - homepage
+        - infisical
+        - immich
         - ntfy
         - prometheus
         - adguard
@@ -54,7 +54,8 @@
         - postgres
         - atuin
         - caddy
-        - homepage
+        - infisical
+        - immich
         - ntfy
         - prometheus
         - adguard
