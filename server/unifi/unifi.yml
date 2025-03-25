@@ -1,0 +1,21 @@
+---
+- name: Run unifi app
+  docker_container:
+    name: unifi
+    image: jacobalberty/unifi:latest
+    volumes:
+      - "{{ env.DOCKER_PATH }}/unifi:/unifi"
+    ports:
+      - 1000:1000
+      - 8443:8443
+      - 3478:3478/udp
+      - 10001:10001/udp
+    env:
+      TZ: "America/Chicago"
+      PUID: "1000"
+      PGID: "1000"
+      MEM_LIMIT: "1024"
+      MEM_STARTUP: "1024"
+      MONGO_USER: "unifi"
+      name: "unifi"
+      UNIFI_HTTP_PORT: "1000"

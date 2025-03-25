@@ -45,6 +45,7 @@
         - homeassistant
         - motioneye
         - portainer
+        - unifi
 
     - name: Install things
       ansible.builtin.include_tasks: "{{ item }}/{{ item }}.yml"
@@ -62,3 +63,4 @@
         - ntfy
         - grafana
         - misc
+        - unifi

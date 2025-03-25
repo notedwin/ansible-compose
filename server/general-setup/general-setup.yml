@@ -32,6 +32,7 @@
       - gh
       - htop
       - rsync
+      - btop
 
 - name: Install tailscale if not installed
   shell: |

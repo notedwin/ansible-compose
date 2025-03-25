@@ -10,32 +10,36 @@ pages:
         widgets:
           - type: dns-stats
             service: adguard
-            url: http://{{ ansible_hostname }}:3003
-            username: {{ env.user }}
-            password: {{ env.quickpass }}
+            url: https://adguard.notedwin.com
+            username: notedwin
+            password: {{ env.QUICK_PASS }}
 
           - type: monitor
             cache: 1m
             title: Services
             sites:
+              - title: UI
+                url: https://ubiquiti.notedwin.com
+                icon: si:ubiquiti
+
               - title: Edwin
-                url: http://notedwin.com
+                url: https://notedwin.com
                 icon: si:webassembly
               
               - title: Healthchecks
-                url: http://{{ ansible_hostname }}:8002
+                url: https://health-checks.notedwin.com
                 icon: si:checkmarx
 
               - title: Infisical
-                url: http://{{ ansible_hostname }}:8080
+                url: https://infisical.notedwin.com
                 icon: si:awssecretsmanager
               
               - title: Home Bridge
-                url: http://{{ ansible_hostname }}:8581
+                url: https://home.notedwin.com
                 icon: si:homebridge
 
               - title: Beszel
-                url: http://{{ ansible_hostname }}:8090
+                url: https://beszel.notedwin.com
                 icon: si:prometheus
           
 

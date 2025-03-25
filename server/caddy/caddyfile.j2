@@ -1,76 +1,56 @@
 {
-	email zamudio.e13@gmail.com
-	debug
+	email zamudio.e13@gmail.com	
 	servers {
 		metrics
 	}
-	# auto_https disable_redirects
+	# acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
 }
 
-:2019 {
-	metrics
+(block) {
+	@external not remote_ip private_ranges
+	redir @external https://{{env.DOMAIN}} permanent
 }
 
-# subdomains dont work on tailscale cert
-# {{ inventory_hostname }}.cow-ghost.ts.net {
-# 	# handle_path /code/* {
-# 	# 	reverse_proxy /* {{ ansible_default_ipv4.address }}:8443
-# 	# }
-# 	# handle_path /vault/* {
-# 	# 	reverse_proxy /* {{ ansible_default_ipv4.address }}:8080
-# 	# }
-# 	handle_path /adguard/* {
-# 		reverse_proxy /* {{ ansible_default_ipv4.address }}:81
-# 	}
-# 	handle_path /cam/* {
-# 		reverse_proxy /* {{ ansible_default_ipv4.address }}:8765
-# 	}
-# 	handle_path /portainer/* {
-# 		reverse_proxy /* portainer:9000
-# 	}
-# 	# TODO: make this a list of accesible urls
-# 	respond "hey" 200
-# }
+# ex. import subdomain adguard adguard:3000 -> adguard.domain.com
+(subdomain) {
+	@{args[0]} host {args[0]}.{{env.DOMAIN}}
+	handle @{args[0]} {
+		import block
+		reverse_proxy {args[1]}
+	}
+}
 
 *.notedwin.com {
 	header {
-		# Enable HSTS
 		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-		# Disable MIME sniffing
 		X-Content-Type-Options "nosniff"
-		# Enable cross-site filter (XSS) and tell browser to block detected attacks
 		X-XSS-Protection "1; mode=block"
-		# Disable content from being loaded in a frame
 		X-Frame-Options "DENY"
-		# keep the referrer from leaking
-		X-Robots-Tag "none"
 		Referrer-Policy no-refferer-when-downgrade
-		# Server name removing
 		-Server
 		header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
 	}
+	encode zstd gzip
 
 	tls {
 		dns cloudflare {{env.CF_API}}
 		resolvers 1.1.1.1
 	}
 
-	encode zstd gzip
-
 	@map host map.notedwin.com
 	handle @map {
 		respond "hi, project has been deprecated" 200
 	}
 
-	@chi host chicago.notedwin.com
+	@chi host chicago.notedwin.com eatchi.notedwin.com
 	handle @chi {
 		root * /chi
 		file_server
 	}
 
-	@eat host eatchi.notedwin.com
-	handle @eat {
-		root * /chi
+	@how host how.notedwin.com
+	handle @how {
+		root * /map
 		file_server
 	}
 
@@ -90,15 +70,38 @@
 		file_server
 	}
 
-	@blog host how.notedwin.com
-	handle @blog {
-		root * /map
-		file_server
+	# local urls: when using container also use the original port not the port openned to local net
+	import subdomain adguard adguard:3000
+	import subdomain port portainer:9000
+	import subdomain memos memos:5230
+	import subdomain glance glance:8080
+	import subdomain immich {{ansible_default_ipv4.address }}:2283
+	import subdomain infisical infisical-backend:8080
+	import subdomain home homebridge:8581
+	import subdomain beszel {{ansible_default_ipv4.address }}:8090
+	import subdomain ntfy ntfy:2586
+
+	@unifi host unifi.notedwin.com
+	handle @unifi {
+		import block
+		reverse_proxy /inform {{ansible_default_ipv4.address }}:1000
+		reverse_proxy https://{{ansible_default_ipv4.address }}:8443 {
+			transport http {
+				tls
+				tls_insecure_skip_verify
+			}
+		}
 	}
 
-	@ntfy host ntfy.notedwin.com
-	handle @ntfy {
-		reverse_proxy {{ ansible_default_ipv4.address }}:2586
+	@health host health-checks.notedwin.com
+	handle @health {
+		import block
+		reverse_proxy https://{{ansible_default_ipv4.address }}:8123 {
+			transport http {
+				tls
+				tls_insecure_skip_verify
+			}
+		}
 	}
 
 	handle {
@@ -106,21 +109,15 @@
 	}
 
 	log {
-		output file /var/log/caddy/access.log {
+		output file /var/log/caddy/access-json.log {
 			roll_size 100mb
-			roll_keep 10
-			roll_keep_for 168h
+			roll_keep 3
+			roll_keep_for 96h
 		}
-		format console {
+		format json {
 			message_key msg
-			level_key level
-			time_key time
-			name_key name
 			caller_key caller
-			stacktrace_key stacktrace
 			time_format iso8601
-			time_local
-			level_format lower
 		}
 	}
 }

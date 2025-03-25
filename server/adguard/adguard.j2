@@ -1,3 +1,6 @@
 users:
   - name: {{ env.USER }}
     password: {{ env.HASH_PASSWORD }}
+rewrites:
+  - domain: notedwin.com
+    answer: {{ ansible_default_ipv4.address }}

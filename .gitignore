@@ -16,3 +16,4 @@ k3s/
 .DS_Store
 .vscode/
 k3s-ansible/
+frigate/

@@ -16,6 +16,7 @@
     ports:
       - "2000:8080"
     volumes:
-      - "{{ env.DOCKER_PATH }}/glance/glance.yml:/app/glance.yml"
+      - "{{ env.DOCKER_PATH }}/glance/glance.yml:/app/config/glance.yml"
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock
